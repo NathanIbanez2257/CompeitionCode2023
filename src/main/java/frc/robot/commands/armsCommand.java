@@ -4,27 +4,38 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.arms;
 
 public class armsCommand extends CommandBase {
-  /** Creates a new armsCommand. */
-  public armsCommand() {
-    // Use addRequirements() here to declare subsystem dependencies.
+  arms armsSub;
+  double speed;
+
+  public armsCommand(arms arms, double armSpeed) {
+    armsSub = arms;
+    speed = armSpeed;
+    addRequirements(armsSub);
   }
 
-  // Called when the command is initially scheduled.
+  
+  
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
-  // Called every time the scheduler runs while the command is scheduled.
+
   @Override
-  public void execute() {}
+  public void execute() {
+    armsSub.move(speed);
+  }
 
-  // Called once the command ends or is interrupted.
+
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    armsSub.move(0);
+  }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

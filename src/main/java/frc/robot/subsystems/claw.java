@@ -4,12 +4,27 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ClawConstants;
 
 public class claw extends SubsystemBase {
-  /** Creates a new claw. */
-  public claw() {}
 
+  WPI_TalonFX claw = new WPI_TalonFX(ClawConstants.clawID);
+
+  /** Creates a new claw. */
+  public claw() {
+
+    claw.setNeutralMode(NeutralMode.Brake);
+  }
+
+  public void move(double speed) {
+    claw.set(speed);
+  }
+
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

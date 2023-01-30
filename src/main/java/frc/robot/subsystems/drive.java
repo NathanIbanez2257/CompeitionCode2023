@@ -4,13 +4,20 @@
 
 package frc.robot.subsystems;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
@@ -30,20 +37,46 @@ public class drive extends SubsystemBase {
 
   DifferentialDrive drive = new DifferentialDrive(leftSide, rightSide);
 
+  PhotonCamera camera = new PhotonCamera("photonvision");
+
+  public static final Gyro pigeon2 = new WPI_Pigeon2(DriveConstants.gyroID);
+
   public static final WPI_Pigeon2 gyro = new WPI_Pigeon2(DriveConstants.gyroID);
 
+  PhotonPipelineResult result = camera.getLatestResult();
+
   public drive() {
+
+    // PortForwarder.add(5800, "photonvision.local", 5800);
     setBreakMode();
     followSides();
-    gyro.reset();
+    // gyro.reset();
+
+  }
+
+  public PhotonPipelineResult returnResult() {
+    return result;
+  }
+
+  public boolean hasTargets()
+  {
+    return result.hasTargets();
+  }
+
+  public double getLimelightYaw() {
+    return result.getBestTarget().getYaw();
+  }
+
+  public double getLimelightPitch() {
+    return result.getBestTarget().getPitch();
   }
 
   public void move(double leftSpeed, double rightSpeed) {
-    leftSide.setInverted(true);
+    rightSide.setInverted(true);
     drive.tankDrive(leftSpeed, rightSpeed);
   }
 
-  public void arcadeMove(double fowardSpeed, double turnSpeed)  {
+  public void arcadeMove(double fowardSpeed, double turnSpeed) {
     leftSide.setInverted(true);
     drive.arcadeDrive(fowardSpeed, turnSpeed);
   }
@@ -91,14 +124,18 @@ public class drive extends SubsystemBase {
     drive.feed();
   }
 
-  public void setMaxOutput(double maxOutput) {
-    drive.setMaxOutput(maxOutput);
+  public double getVertical() {
+    return -gyro.getPitch();
   }
 
-  
+  public void setMaxOutput(double maxOutput) {
+    drive.setMaxOutput(maxOutput);
+
+  }
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Pitch", getVertical());
 
   }
 }

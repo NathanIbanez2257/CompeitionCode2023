@@ -5,26 +5,34 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.claw;
 
 public class clawCommand extends CommandBase {
-  /** Creates a new clawCommand. */
-  public clawCommand() {
-    // Use addRequirements() here to declare subsystem dependencies.
+  claw clawSub;
+  double speed;
+
+  public clawCommand(claw claw, double clawSpeed) {
+    clawSub = claw;
+    speed = clawSpeed;
+    addRequirements(clawSub);
   }
 
-  // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    clawSub.move(speed);
+  }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    clawSub.move(speed);
+  }
 
-  // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    clawSub.move(0);
 
-  // Returns true when the command should end.
+  }
+
   @Override
   public boolean isFinished() {
     return false;

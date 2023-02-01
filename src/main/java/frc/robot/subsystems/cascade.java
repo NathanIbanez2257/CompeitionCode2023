@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CascadeConstants;
@@ -14,11 +15,23 @@ public class cascade extends SubsystemBase {
 
   WPI_TalonFX cascade = new WPI_TalonFX(CascadeConstants.cascadeID);
 
-  //DigitalInput bump1 = new DigitalInput(CascadeConstants.bumpSwitch1);
-  //DigitalInput bump2 = new DigitalInput(CascadeConstants.bumpSwitch1);
+
 
   public cascade() {
     breakMode();
+  
+    cascade.configForwardSoftLimitEnable(true);
+    cascade.configReverseSoftLimitEnable(true);
+
+    cascade.configForwardSoftLimitThreshold(115159); 
+    cascade.configReverseSoftLimitThreshold(1023); 
+
+  }
+  
+
+  public void setVoltage(double volts)
+  {
+    cascade.setVoltage(volts);
   }
 
   public void move(double speed) {
@@ -29,7 +42,7 @@ public class cascade extends SubsystemBase {
   {
     cascade.setNeutralMode(NeutralMode.Brake);
   }
-
+  
   public double cascadeTick2Feet()
   {
     double motorRotations = cascade.getSelectedSensorPosition() / CascadeConstants.kCountsPerRev;
@@ -40,7 +53,12 @@ public class cascade extends SubsystemBase {
 
   @Override
   public void periodic() {
+    
+    //cascadeBottom();
+    //cascadeTop();
 
     SmartDashboard.putNumber("Cascade Position", cascadeTick2Feet());
+
+    SmartDashboard.putNumber("Cascade Encoder Position", cascade.getSelectedSensorPosition());
   }
 }

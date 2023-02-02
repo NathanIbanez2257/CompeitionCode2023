@@ -5,20 +5,17 @@ import edu.wpi.first.math.util.Units;
 
 public final class Constants {
 
-  public static final double 
-  shortAimKP = 0.01, shortAimKI = .025,
+  public static final double shortAimKP = 0.01, shortAimKI = .025,
 
-longAimKP = .007, longAimKI = 0.01,  
+      longAimKP = .007, longAimKI = 0.01,
 
-aimKD = 0.6, targetAngle = 0.00,
+      aimKD = 0.6, targetAngle = 0.00,
 
+      //////////////////////// PIDS for drive ////////////////////////////////
 
+      // aimKP = 0.05, aimKI = 0, aimKD1 = 0,
 
-////////////////////////                  PIDS for drive                ////////////////////////////////
-
-//aimKP = 0.05, aimKI = 0, aimKD1 = 0, 
-
-distanceKP = 0.38, distanceKI = 0.09, distanceKD = 0.07; 
+      distanceKP = 0.38, distanceKI = 0.09, distanceKD = 0.07;
 
   public final class NathanControllerConstants {
 
@@ -64,7 +61,7 @@ distanceKP = 0.38, distanceKI = 0.09, distanceKD = 0.07;
 
         ///////////// Cascade Buttons /////////////
 
-        cascadeUpButton = 7, cascadeDownButton = 5,   
+        cascadeUpButton = 7, cascadeDownButton = 5,
 
         ///////////// Arm Buttons /////////////
 
@@ -90,31 +87,33 @@ distanceKP = 0.38, distanceKI = 0.09, distanceKD = 0.07;
 
   }
 
-  public static final class KineConstants
+  public static final class AutonConstatns
   {
-    public static final double
-    kCountsPerRev = 2048,
-    kGearRatio = 6.9048,
-    kWheelRadiusInches = 3,
+    public static final double 
+
+    KP = .84, KI = 0, KD = .00;
+  }
 
 
+  public static final class KineConstants {
+    public static final double kCountsPerRev = 2048,
+        kGearRatio = 6.9048,
+        kWheelRadiusInches = 3,
 
-    ksVolts = 0.21274,
-    kvVoltSecondsPerMeter = 1.5901,
-    kaVoltSecondSquaredPerMeter = 0.2235,
-    kpDriveVelocity = 0.43958,
-    
-    kTrackWidthMeters = Units.inchesToMeters(25),
-    
-    kMaxSpeedMetersPerSecond = 2,
-    kMaxAccelerationMetersPerSecSquared = 2,
-    
-    kRamseteB = 2,
-    kRamseteZeta = .7;
+        ksVolts = 0.21274,
+        kvVoltSecondsPerMeter = 1.5901,
+        kaVoltSecondSquaredPerMeter = 0.2235,
+        kpDriveVelocity = 0.43958,
+
+        kTrackWidthMeters = Units.inchesToMeters(25),
+
+        kMaxSpeedMetersPerSecond = 2,
+        kMaxAccelerationMetersPerSecSquared = 2,
+
+        kRamseteB = 2,
+        kRamseteZeta = .7;
 
     public static final DifferentialDriveKinematics kDrive = new DifferentialDriveKinematics(kTrackWidthMeters);
-
-    
 
   }
 
@@ -122,9 +121,7 @@ distanceKP = 0.38, distanceKI = 0.09, distanceKD = 0.07;
 
     public static final int
 
-    cascadeID = 5,
-
-        bumpSwitch1 = 0, bumpSwitch2 = 1;
+    cascadeID = 5;
 
     public static final double
 
@@ -152,6 +149,10 @@ distanceKP = 0.38, distanceKI = 0.09, distanceKD = 0.07;
 
     leftArmID = 6, rightArmID = 7;
 
+    public static final double
+
+    kArmGearRatio = 200, kCountsPerRev = 2048, kArmScaleFactor = 90;
+
   }
 
   public static final class ClawConstants {
@@ -159,6 +160,11 @@ distanceKP = 0.38, distanceKI = 0.09, distanceKD = 0.07;
     public static final int
 
     clawID = 8;
+
+    public static final double
+
+    clawKP = .5, clawKI = 0, clawKD = 0,
+        kClawGearRatio = 100, kCountsPerRev = 2048, kClawScaleFactor = 1;
 
   }
 

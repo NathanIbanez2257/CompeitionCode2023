@@ -5,25 +5,36 @@
 package frc.robot;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GioControllerConstants;
 import frc.robot.Constants.KineConstants;
 import frc.robot.Constants.NathanControllerConstants;
@@ -33,7 +44,9 @@ import frc.robot.commands.armsCommand;
 import frc.robot.commands.cascadeCommand;
 import frc.robot.commands.cascadePIDCommand;
 import frc.robot.commands.clawCommand;
+import frc.robot.commands.driveAutonPIDCommand;
 import frc.robot.commands.limelightTrackingCommand;
+import frc.robot.commands.meterDriveCommand;
 import frc.robot.subsystems.arms;
 import frc.robot.subsystems.cascade;
 import frc.robot.subsystems.claw;
@@ -150,6 +163,9 @@ public class RobotContainer {
 
   }
 
+  ParallelCommandGroup AutonomousPractice = new ParallelCommandGroup(
+      loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true));
+
   public Command loadPathPlannerTrajectoryToRamseteCommand(String filename, boolean resetOdometry) {
     Trajectory trajectory;
 
@@ -211,6 +227,53 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return chooser.getSelected();
+/*
+    // Create a voltage constraint to ensure we don't accelerate too fast
+    DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+        new SimpleMotorFeedforward(
+            KineConstants.ksVolts,
+            KineConstants.kvVoltSecondsPerMeter,
+            KineConstants.kaVoltSecondSquaredPerMeter),
+        KineConstants.kDrive,
+        10);
+
+    TrajectoryConfig config = new TrajectoryConfig(
+        KineConstants.kMaxSpeedMetersPerSecond,
+        KineConstants.kMaxAccelerationMetersPerSecSquared)
+        // Add kinematics to ensure max speed is actually obeyed
+        .setKinematics(KineConstants.kDrive)
+        // Apply the voltage constraint
+        .addConstraint(autoVoltageConstraint);
+
+    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+        // Start at the origin facing the +X direction
+        new Pose2d(0, 0, new Rotation2d(0)),
+        // Pass through these two interior waypoints, making an 's' curve path
+        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        // End 3 meters straight ahead of where we started, facing forward
+        new Pose2d(3, 0, new Rotation2d(0)),
+        // Pass config
+        config);
+
+    RamseteCommand ramseteCommand = new RamseteCommand(exampleTrajectory, driveSub::getPose,
+        new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
+        new SimpleMotorFeedforward(KineConstants.ksVolts, KineConstants.kvVoltSecondsPerMeter,
+            KineConstants.kaVoltSecondSquaredPerMeter),
+        KineConstants.kDrive,
+        driveSub::getWheelSpeeds,
+        new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+        new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+        driveSub::tankDriveVolts,
+        driveSub);
+
+        driveSub.resetOdometry(exampleTrajectory.getInitialPose());
+
+    return ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0));
+    */
+    // return chooser.getSelected();
+    //return loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true);
+
+    SequentialCommandGroup auto = new SequentialCommandGroup(new driveAutonPIDCommand(3, driveSub));
+    return auto;
   }
 }

@@ -21,6 +21,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -59,6 +60,8 @@ public class drive extends SubsystemBase {
 
   public drive() {
 
+
+
     // returnResult();
     resetEncoders();
 
@@ -67,10 +70,12 @@ public class drive extends SubsystemBase {
     followSides();
     // gyro.reset();
 
-    gyro.reset();
     gyro.calibrate();
+    gyro.reset();
+    rightSide.setInverted(true);
+    
 
-    m_Odometry = new DifferentialDriveOdometry(pigeon.getRotation2d(), leftNativeDistanceInMeters(),
+    m_Odometry = new DifferentialDriveOdometry(gyro.getRotation2d(), leftNativeDistanceInMeters(),
         rightNativeDistanceInMeters());
 
     m_Odometry.resetPosition(gyro.getRotation2d(), leftNativeDistanceInMeters(), rightNativeDistanceInMeters(),
@@ -138,11 +143,11 @@ public class drive extends SubsystemBase {
   }
 
   public double getRightSideEncoderPosition() {
-    return -rightFront.getSelectedSensorPosition();
+    return rightFront.getSelectedSensorPosition();
   }
 
   public double getLeftSideEncoderPosition() {
-    return -leftFront.getSelectedSensorPosition();
+    return leftFront.getSelectedSensorPosition();
   }
 
   public double getVertical() {
@@ -175,27 +180,27 @@ public class drive extends SubsystemBase {
 
     double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
 
-    return -positionMeters;
+    return positionMeters;
 
   }
 
   public double leftNativeVelocityInMeters() {
-    double motorRotations = rightFront.getSelectedSensorPosition() / KineConstants.kCountsPerRev;
+    double motorRotations = rightFront.getSelectedSensorVelocity() / KineConstants.kCountsPerRev;
     double wheelRotations = motorRotations / KineConstants.kGearRatio;
 
     double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
 
-    return -positionMeters / 60;
+    return positionMeters / 60;
 
   }
 
   public double rightNativeVelocityInMeters() {
-    double motorRotations = rightFront.getSelectedSensorPosition() / KineConstants.kCountsPerRev;
+    double motorRotations = rightFront.getSelectedSensorVelocity() / KineConstants.kCountsPerRev;
     double wheelRotations = motorRotations / KineConstants.kGearRatio;
 
     double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
 
-    return -positionMeters / 60;
+    return positionMeters / 60;
 
   }
 
@@ -204,7 +209,7 @@ public class drive extends SubsystemBase {
   }
 
   public double getTurnRate() {
-    return gyro.getRate();
+    return -gyro.getRate();
   }
 
   public Pose2d getPose() {
@@ -213,6 +218,7 @@ public class drive extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
+    gyro.reset();
     m_Odometry.resetPosition(gyro.getRotation2d(), leftNativeDistanceInMeters(), rightNativeDistanceInMeters(), pose);
   }
 
@@ -221,7 +227,7 @@ public class drive extends SubsystemBase {
   }
 
   public double getAvgPositionDistance() {
-    return (leftNativeDistanceInMeters() + rightNativeDistanceInMeters() / 2.0);
+    return ((leftNativeDistanceInMeters() + rightNativeDistanceInMeters()) / 2.0);
   }
 
   public void zeroHeading() {
@@ -245,6 +251,10 @@ public class drive extends SubsystemBase {
     return a;
   }
 
+  public double getRate() {
+    return -gyro.getRate();
+  }
+
   public double currentDistance() {
     return distanceToTarget;
   }
@@ -253,10 +263,10 @@ public class drive extends SubsystemBase {
   public void periodic() {
 
     /*
-    camera.getLatestResult();
-    result.getTargets();
-    result.hasTargets();
-    */
+     * camera.getLatestResult();
+     * result.getTargets();
+     * result.hasTargets();
+     */
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry tx = table.getEntry("tx");
@@ -272,24 +282,26 @@ public class drive extends SubsystemBase {
     SmartDashboard.putNumber("LimelightArea", a);
 
     double limeHeightToTarget = 34 - 29;
+
     double theta = Math.toRadians(90 + y);
     distanceToTarget = limeHeightToTarget / (Math.tan(theta));
 
     SmartDashboard.putNumber("Pitch", getVertical());
     SmartDashboard.putBoolean("Lime Works", result.hasTargets());
 
-    m_Odometry.update(pigeon.getRotation2d(), leftNativeDistanceInMeters(),
+    m_Odometry.update(gyro.getRotation2d(), leftNativeDistanceInMeters(),
         rightNativeDistanceInMeters());
 
     SmartDashboard.putNumber("Pose X", m_Odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Pose Y", m_Odometry.getPoseMeters().getY());
-    SmartDashboard.putNumber("Pose Gyro", gyro.getRotation2d().getDegrees());
+    SmartDashboard.putNumber("Pose Gyro", pigeon.getRotation2d().getDegrees());
 
     SmartDashboard.putNumber("Gyro Rate", getTurnRate());
-
 
     SmartDashboard.putNumber("Left Side Encoders Meters", leftNativeDistanceInMeters());
     SmartDashboard.putNumber("Right Side Encoders Meters", rightNativeDistanceInMeters());
 
+    SmartDashboard.putNumber("Left Side Encoders Velocity", leftNativeVelocityInMeters());
+    SmartDashboard.putNumber("Right Side Encoders Velocity", rightNativeVelocityInMeters());
   }
 }

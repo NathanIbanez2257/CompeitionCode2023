@@ -71,6 +71,9 @@ public class RobotContainer {
 
   String straightPath = "straight.wpilib.json";
   String path1 = "NEWPATH.wpilib.json";
+  String AutonPath1 = "AutonPath1.wpilib.json";
+  String AutonPath2 = "AutonPath2.wpilib.json";
+  String OfficialTestingPath = "OfficialTestingAuton.wpilib.json";
 
   RunCommand nathanMove = new RunCommand(
       () -> driveSub.move(SpeedConstants.driveSpeed * nathan.getRawAxis(NathanControllerConstants.leftDriveAxis),
@@ -88,9 +91,21 @@ public class RobotContainer {
 
     driveSub.setDefaultCommand(nathanMove);
 
+    chooser.addOption("Official Testing",
+        loadPathPlannerTrajectoryToRamseteCommand(
+            OfficialTestingPath, true));
+
     chooser.addOption("straightPath",
         loadPathPlannerTrajectoryToRamseteCommand(
             straightPath, true));
+
+    chooser.addOption("AutonPath1",
+        loadPathPlannerTrajectoryToRamseteCommand(
+            AutonPath1, true));
+
+    chooser.addOption("AutonPath2",
+        loadPathPlannerTrajectoryToRamseteCommand(
+            AutonPath2, true));
 
     chooser.addOption("Path1",
         loadPathPlannerTrajectoryToRamseteCommand(
@@ -98,10 +113,6 @@ public class RobotContainer {
 
     Shuffleboard.getTab("Autonomous").add(chooser);
 
-
-
-
-    
     JoystickButton armUp = new JoystickButton(gio, GioControllerConstants.armUpButton);
     armUp.whileTrue(armUpCommand);
 

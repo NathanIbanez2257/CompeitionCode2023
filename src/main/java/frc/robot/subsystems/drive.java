@@ -14,6 +14,7 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -75,6 +76,10 @@ public class drive extends SubsystemBase {
     m_Odometry.resetPosition(gyro.getRotation2d(), leftNativeDistanceInMeters(), rightNativeDistanceInMeters(),
         new Pose2d());
 
+  }
+
+  public double getAngle() {
+    return -gyro.getAngle();
   }
 
   public PhotonPipelineResult returnResult() {
@@ -199,7 +204,7 @@ public class drive extends SubsystemBase {
   }
 
   public double getTurnRate() {
-    return -gyro.getRate();
+    return gyro.getRate();
   }
 
   public Pose2d getPose() {
@@ -247,28 +252,28 @@ public class drive extends SubsystemBase {
   @Override
   public void periodic() {
 
+    /*
     camera.getLatestResult();
     result.getTargets();
     result.hasTargets();
+    */
 
-    /*
-     * NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-     * NetworkTableEntry tx = table.getEntry("tx");
-     * NetworkTableEntry ty = table.getEntry("ty");
-     * NetworkTableEntry ta = table.getEntry("ta");
-     * 
-     * x = tx.getDouble(0.0);
-     * y = ty.getDouble(0.0);
-     * a = ta.getDouble(0.0);
-     * 
-     * SmartDashboard.putNumber("LimelightX", x);
-     * SmartDashboard.putNumber("LimelightY", y);
-     * SmartDashboard.putNumber("LimelightArea", a);
-     * 
-     * double limeHeightToTarget = 34 - 29;
-     * double theta = Math.toRadians(90 + y);
-     * distanceToTarget = limeHeightToTarget / (Math.tan(theta));
-     */
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTableEntry tx = table.getEntry("tx");
+    NetworkTableEntry ty = table.getEntry("ty");
+    NetworkTableEntry ta = table.getEntry("ta");
+
+    x = tx.getDouble(0.0);
+    y = ty.getDouble(0.0);
+    a = ta.getDouble(0.0);
+
+    SmartDashboard.putNumber("LimelightX", x);
+    SmartDashboard.putNumber("LimelightY", y);
+    SmartDashboard.putNumber("LimelightArea", a);
+
+    double limeHeightToTarget = 34 - 29;
+    double theta = Math.toRadians(90 + y);
+    distanceToTarget = limeHeightToTarget / (Math.tan(theta));
 
     SmartDashboard.putNumber("Pitch", getVertical());
     SmartDashboard.putBoolean("Lime Works", result.hasTargets());
@@ -278,7 +283,10 @@ public class drive extends SubsystemBase {
 
     SmartDashboard.putNumber("Pose X", m_Odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Pose Y", m_Odometry.getPoseMeters().getY());
-    SmartDashboard.putNumber("Pose Gyro", gyro.getAngle());
+    SmartDashboard.putNumber("Pose Gyro", gyro.getRotation2d().getDegrees());
+
+    SmartDashboard.putNumber("Gyro Rate", getTurnRate());
+
 
     SmartDashboard.putNumber("Left Side Encoders Meters", leftNativeDistanceInMeters());
     SmartDashboard.putNumber("Right Side Encoders Meters", rightNativeDistanceInMeters());

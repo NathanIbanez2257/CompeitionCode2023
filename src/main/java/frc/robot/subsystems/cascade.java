@@ -23,7 +23,7 @@ public class cascade extends SubsystemBase {
     cascade.configForwardSoftLimitEnable(true);
     cascade.configReverseSoftLimitEnable(true);
 
-    cascade.configForwardSoftLimitThreshold(115159); 
+    //cascade.configForwardSoftLimitThreshold(117980); 
     cascade.configReverseSoftLimitThreshold(1023); 
 
   }
@@ -49,6 +49,14 @@ public class cascade extends SubsystemBase {
     double cascadeTicksToFeet = motorRotations / (CascadeConstants.kCascadeGearRatio * CascadeConstants.kCascadeScaleFactor);
 
     return cascadeTicksToFeet;
+  }
+
+  public double cascadeVelocityFeetPerSecond()
+  {
+    double motorRotations = cascade.getSelectedSensorPosition() / CascadeConstants.kCountsPerRev;
+    double cascadeTicksToFeet = motorRotations / (CascadeConstants.kCascadeGearRatio * CascadeConstants.kCascadeScaleFactor);
+
+    return cascadeTicksToFeet/60;
   }
 
   @Override

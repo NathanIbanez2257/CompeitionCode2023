@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive;
@@ -16,25 +17,31 @@ public class limelightTrackingCommand extends CommandBase {
   double fowardSpeed, rotationSpeed;
 
 
-  public limelightTrackingCommand(double setPoint, drive drive) {
+  public limelightTrackingCommand(drive drive) {
     driveSub = drive;
 
     turnPID = new PIDController(DriveConstants.KP, DriveConstants.KI, DriveConstants.KD);
-    turnPID.setSetpoint(setPoint);
+    turnPID.setSetpoint(fowardSpeed);;
     addRequirements(driveSub);
   }
 
   @Override
   public void initialize() {
+    
+    System.out.println("Command is being run");
     turnPID.reset();
-    turnPID.setTolerance(.5);
 
-    driveSub.returnResult();
+    //turnPID.setTolerance(0);
+
+  
       
   }
 
   @Override
   public void execute() {
+
+    driveSub.returnResult();
+    
     if(driveSub.hasTargets())
     {
       rotationSpeed = -turnPID.calculate(driveSub.getLimelightYaw(), 0);
@@ -43,6 +50,8 @@ public class limelightTrackingCommand extends CommandBase {
     else{
       rotationSpeed = 0;
     }
+
+    SmartDashboard.putBoolean("Has Targets Command", driveSub.hasTargets());
   }
 
   @Override

@@ -1,8 +1,24 @@
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 public final class Constants {
+
+  public static final double 
+  shortAimKP = 0.01, shortAimKI = .025,
+
+longAimKP = .007, longAimKI = 0.01,  
+
+aimKD = 0.6, targetAngle = 0.00,
+
+
+
+////////////////////////                  PIDS for drive                ////////////////////////////////
+
+//aimKP = 0.05, aimKI = 0, aimKD1 = 0, 
+
+distanceKP = 0.38, distanceKI = 0.09, distanceKD = 0.07; 
 
   public final class NathanControllerConstants {
 
@@ -48,7 +64,7 @@ public final class Constants {
 
         ///////////// Cascade Buttons /////////////
 
-        cascadeUpButton = 7, cascadeDownButton = 5,
+        cascadeUpButton = 7, cascadeDownButton = 5,   
 
         ///////////// Arm Buttons /////////////
 
@@ -74,6 +90,34 @@ public final class Constants {
 
   }
 
+  public static final class KineConstants
+  {
+    public static final double
+    kCountsPerRev = 2048,
+    kGearRatio = 6.9048,
+    kWheelRadiusInches = 3,
+
+
+
+    ksVolts = 0.21274,
+    kvVoltSecondsPerMeter = 1.5901,
+    kaVoltSecondSquaredPerMeter = 0.2235,
+    kpDriveVelocity = 0.43958,
+    
+    kTrackWidthMeters = Units.inchesToMeters(25),
+    
+    kMaxSpeedMetersPerSecond = 2,
+    kMaxAccelerationMetersPerSecSquared = 2,
+    
+    kRamseteB = 2,
+    kRamseteZeta = .7;
+
+    public static final DifferentialDriveKinematics kDrive = new DifferentialDriveKinematics(kTrackWidthMeters);
+
+    
+
+  }
+
   public static final class CascadeConstants {
 
     public static final int
@@ -84,15 +128,15 @@ public final class Constants {
 
     public static final double
 
-    KP = 3.3, KI = .25, KD = .23,
+    KP = 4.8, KI = .25, KD = .11,
 
-        kSVolts = 1,
+        ksVolts = 0.15285,
 
-        kGVolts = 1,
+        kgVolts = 0.2239,
 
-        kVVoltSecondPerRad = 0.5,
+        kvVoltSecondPerMeters = 15.334,
 
-        kAVoltSecondSquaredPerRad = 0.1,
+        kaVoltSecondSquaredPerRad = 0.37419,
 
         kMaxVelocityRadPerSecond = 3,
 
@@ -131,7 +175,7 @@ public final class Constants {
 
     public static final double
 
-    driveSpeed = .7, cascadeSpeed = .45, armSpeed = .45, clawSpeed = .35;
+    driveSpeed = .85, cascadeSpeed = .55, armSpeed = .45, clawSpeed = .35;
 
   }
 
@@ -145,7 +189,7 @@ public final class Constants {
         targetHeightMeters = Units.inchesToMeters(0),
 
         // Angle between horizontal and the camera.
-        cameraPitchRadians = Units.degreesToRadians(0),
+        cameraPitchRadians = Units.degreesToRadians(90),
 
         // How far from the target we want to be
         targetRangeMeters = Units.feetToMeters(2),

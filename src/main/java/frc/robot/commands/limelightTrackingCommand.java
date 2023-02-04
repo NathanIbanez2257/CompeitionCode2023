@@ -16,38 +16,34 @@ public class limelightTrackingCommand extends CommandBase {
   PIDController forwardPID, turnPID;
   double fowardSpeed, rotationSpeed;
 
-
   public limelightTrackingCommand(drive drive) {
     driveSub = drive;
 
     turnPID = new PIDController(DriveConstants.KP, DriveConstants.KI, DriveConstants.KD);
-    turnPID.setSetpoint(fowardSpeed);;
+    turnPID.setSetpoint(fowardSpeed);
+    ;
     addRequirements(driveSub);
   }
 
   @Override
   public void initialize() {
-    
+
     System.out.println("Command is being run");
     turnPID.reset();
 
-    //turnPID.setTolerance(0);
-
-  
-      
+    // turnPID.setTolerance(0);
   }
 
   @Override
   public void execute() {
 
     driveSub.returnResult();
-    
-    if(driveSub.hasTargets())
-    {
+
+    if (driveSub.hasTargets()) {
       rotationSpeed = -turnPID.calculate(driveSub.getLimelightYaw(), 0);
     }
 
-    else{
+    else {
       rotationSpeed = 0;
     }
 

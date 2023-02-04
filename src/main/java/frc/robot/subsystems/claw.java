@@ -16,7 +16,7 @@ public class claw extends SubsystemBase {
   WPI_TalonFX claw = new WPI_TalonFX(ClawConstants.clawID);
 
   public claw() {
-
+    claw.setSelectedSensorPosition(0);
     claw.setNeutralMode(NeutralMode.Brake);
   }
 
@@ -33,8 +33,7 @@ public class claw extends SubsystemBase {
 
   @Override
   public void periodic() {
-
-    SmartDashboard.putNumber("ClawEncoder", claw.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Claw Encoder", claw.getSelectedSensorPosition());
     SmartDashboard.putNumber("Claw To Inches", clawTickToDegrees());
   }
 }

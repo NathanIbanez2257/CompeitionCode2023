@@ -36,7 +36,7 @@ public class driveAutonPIDCommand extends CommandBase {
   @Override
   public void initialize() {
     drivePID.reset();
-    drivePID.setTolerance(.6);
+    drivePID.setTolerance(.02);
     driveSub.resetEncoders();
    }
 
@@ -45,7 +45,6 @@ public class driveAutonPIDCommand extends CommandBase {
 
     double speed = drivePID.calculate(driveSub.leftNativeDistanceInMeters());
     driveSub.move(-speed, -speed);
-
 
     //cascadePID.calculate(cascadeSub.cascadeTick2Feet(), goal);
      /*

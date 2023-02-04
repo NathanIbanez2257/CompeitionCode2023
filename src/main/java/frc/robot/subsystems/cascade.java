@@ -15,22 +15,18 @@ public class cascade extends SubsystemBase {
 
   WPI_TalonFX cascade = new WPI_TalonFX(CascadeConstants.cascadeID);
 
-
-
   public cascade() {
     breakMode();
-  
+
     cascade.configForwardSoftLimitEnable(true);
     cascade.configReverseSoftLimitEnable(true);
 
-    //cascade.configForwardSoftLimitThreshold(117980); 
-    cascade.configReverseSoftLimitThreshold(1023); 
+    // cascade.configForwardSoftLimitThreshold(117980);
+    cascade.configReverseSoftLimitThreshold(1023);
 
   }
-  
 
-  public void setVoltage(double volts)
-  {
+  public void setVoltage(double volts) {
     cascade.setVoltage(volts);
   }
 
@@ -38,35 +34,33 @@ public class cascade extends SubsystemBase {
     cascade.set(speed);
   }
 
-  public void breakMode()
-  {
+  public void breakMode() {
     cascade.setNeutralMode(NeutralMode.Brake);
   }
-  
-  public double cascadeTick2Feet()
-  {
+
+  public double cascadeTick2Feet() {
     double motorRotations = cascade.getSelectedSensorPosition() / CascadeConstants.kCountsPerRev;
-    double cascadeTicksToFeet = motorRotations / (CascadeConstants.kCascadeGearRatio * CascadeConstants.kCascadeScaleFactor);
+    double cascadeTicksToFeet = motorRotations
+        / (CascadeConstants.kCascadeGearRatio * CascadeConstants.kCascadeScaleFactor);
 
     return cascadeTicksToFeet;
   }
 
-  public double cascadeVelocityFeetPerSecond()
-  {
+  public double cascadeVelocityFeetPerSecond() {
     double motorRotations = cascade.getSelectedSensorPosition() / CascadeConstants.kCountsPerRev;
-    double cascadeTicksToFeet = motorRotations / (CascadeConstants.kCascadeGearRatio * CascadeConstants.kCascadeScaleFactor);
+    double cascadeTicksToFeet = motorRotations
+        / (CascadeConstants.kCascadeGearRatio * CascadeConstants.kCascadeScaleFactor);
 
-    return cascadeTicksToFeet/60;
+    return cascadeTicksToFeet / 60;
   }
 
   @Override
   public void periodic() {
-    
-    //cascadeBottom();
-    //cascadeTop();
+
+    // cascadeBottom();
+    // cascadeTop();
 
     SmartDashboard.putNumber("Cascade Position", cascadeTick2Feet());
-
     SmartDashboard.putNumber("Cascade Encoder Position", cascade.getSelectedSensorPosition());
   }
 }

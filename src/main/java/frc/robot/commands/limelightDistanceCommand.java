@@ -19,7 +19,6 @@ public class limelightDistanceCommand extends CommandBase {
   PIDController forwardPID, turnPID;
   double fowardSpeed, rotationSpeed;
 
-
   public limelightDistanceCommand(double setPoint, drive drive) {
     driveSub = drive;
 
@@ -34,21 +33,20 @@ public class limelightDistanceCommand extends CommandBase {
     forwardPID.setTolerance(.5);
 
     driveSub.returnResult();
-      
+
   }
 
   @Override
   public void execute() {
-    if(driveSub.hasTargets())
-    {
-      double range = 
-              PhotonUtils.calculateDistanceToTargetMeters(LimelightConstants.cameraHeightMeters, LimelightConstants.targetHeightMeters, 
-              LimelightConstants.cameraPitchRadians, Units.degreesToRadians(driveSub.getLimelightPitch()));
+    if (driveSub.hasTargets()) {
+      double range = PhotonUtils.calculateDistanceToTargetMeters(LimelightConstants.cameraHeightMeters,
+          LimelightConstants.targetHeightMeters,
+          LimelightConstants.cameraPitchRadians, Units.degreesToRadians(driveSub.getLimelightPitch()));
 
       forwardPID.calculate(range, LimelightConstants.targetRangeMeters);
     }
 
-    else{
+    else {
       fowardSpeed = 0;
     }
   }

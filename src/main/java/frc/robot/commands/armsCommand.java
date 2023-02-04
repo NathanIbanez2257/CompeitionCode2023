@@ -17,18 +17,14 @@ public class armsCommand extends CommandBase {
     addRequirements(armsSub);
   }
 
-  
-  
   @Override
   public void initialize() {
   }
-
 
   @Override
   public void execute() {
     armsSub.move(speed);
   }
-
 
   @Override
   public void end(boolean interrupted) {

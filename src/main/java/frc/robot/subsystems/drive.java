@@ -8,11 +8,8 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
-import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -21,7 +18,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -59,10 +55,7 @@ public class drive extends SubsystemBase {
   double x, y, a, distanceToTarget;
 
   public drive() {
-
-
-
-    // returnResult();
+    returnResult();
     resetEncoders();
 
     // PortForwarder.add(5800, "photonvision.local", 5800);
@@ -73,14 +66,12 @@ public class drive extends SubsystemBase {
     gyro.calibrate();
     gyro.reset();
     rightSide.setInverted(true);
-    
 
     m_Odometry = new DifferentialDriveOdometry(gyro.getRotation2d(), leftNativeDistanceInMeters(),
         rightNativeDistanceInMeters());
 
     m_Odometry.resetPosition(gyro.getRotation2d(), leftNativeDistanceInMeters(), rightNativeDistanceInMeters(),
         new Pose2d());
-
   }
 
   public double getAngle() {
@@ -171,7 +162,6 @@ public class drive extends SubsystemBase {
     double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
 
     return -positionMeters;
-
   }
 
   public double rightNativeDistanceInMeters() {
@@ -181,7 +171,6 @@ public class drive extends SubsystemBase {
     double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
 
     return positionMeters;
-
   }
 
   public double leftNativeVelocityInMeters() {
@@ -191,7 +180,6 @@ public class drive extends SubsystemBase {
     double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
 
     return positionMeters / 60;
-
   }
 
   public double rightNativeVelocityInMeters() {
@@ -201,7 +189,6 @@ public class drive extends SubsystemBase {
     double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
 
     return positionMeters / 60;
-
   }
 
   public double getHeading() {
@@ -262,11 +249,9 @@ public class drive extends SubsystemBase {
   @Override
   public void periodic() {
 
-    /*
-     * camera.getLatestResult();
-     * result.getTargets();
-     * result.hasTargets();
-     */
+    camera.getLatestResult();
+    result.getTargets();
+    result.hasTargets();
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry tx = table.getEntry("tx");

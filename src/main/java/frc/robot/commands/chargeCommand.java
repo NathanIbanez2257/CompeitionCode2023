@@ -36,7 +36,7 @@ public class chargeCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(driveSub.getVertical() == 0)
+    if(Math.abs(driveSub.getVertical()) != 0)
     {
       errorGyro = GyroConstants.gyroAngle + (-1 * driveSub.getVertical());
       

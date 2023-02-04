@@ -5,17 +5,20 @@ import edu.wpi.first.math.util.Units;
 
 public final class Constants {
 
-  public static final double shortAimKP = 0.01, shortAimKI = .025,
+  public static final class LimelightOriginalConstants {
 
-      longAimKP = .007, longAimKI = 0.01,
+    public static final double shortAimKP = 0.01, shortAimKI = .025,
 
-      aimKD = 0.6, targetAngle = 0.00,
+        longAimKP = .007, longAimKI = 0.01,
 
-      //////////////////////// PIDS for drive ////////////////////////////////
+        aimKD = 0.6, targetAngle = 0.00,
 
-      // aimKP = 0.05, aimKI = 0, aimKD1 = 0,
+        //////////////////////// PIDS for drive ////////////////////////////////
 
-      distanceKP = 0.38, distanceKI = 0.09, distanceKD = 0.07;
+        // aimKP = 0.05, aimKI = 0, aimKD1 = 0,
+
+        distanceKP = 0.38, distanceKI = 0.09, distanceKD = 0.07;
+  }
 
   public final class NathanControllerConstants {
 
@@ -31,9 +34,9 @@ public final class Constants {
 
         cascadeUpButton = 7, cascadeDownButton = 8, // manual cascade buttons
 
-        cascadeZeroButton = 13, // cascade zero button
+        cascadeZeroButton = 2, // cascade zero button
 
-        cascadeConeTopButton = 0, cascadeConeMidButton = 0, // cascade buttons for cones
+        cascadeConeTopButton = 0, cascadeConeMidButton = 1, // cascade buttons for cones
 
         cascadeCubeTopButton = 0, cascadeCubeMidButton = 0, // cascade buttons for cubes
 
@@ -45,7 +48,7 @@ public final class Constants {
 
         clawOpenButton = 8, clawCloseButton = 7,
 
-        gyroBalanceButton = 14; // charge station balance button
+        gyroBalanceButton = 14, limeTrackButton = 14, limeDistanceButton = 13; // charge station balance button
 
   }
 
@@ -87,13 +90,13 @@ public final class Constants {
 
   }
 
-  public static final class AutonConstatns
-  {
-    public static final double 
+  public static final class AutonConstatns {
+    public static final double
 
-    KP = .84, KI = 0, KD = .00;
+    KP = .5, KI = 0.13, KD = 0.14;
+
+    // KP = .97, KI = 0, KD = .2;//KD = .035;
   }
-
 
   public static final class KineConstants {
     public static final double kCountsPerRev = 2048,
@@ -151,8 +154,8 @@ public final class Constants {
 
     public static final double
 
-    kArmGearRatio = 200, kCountsPerRev = 2048, kArmScaleFactor = 90;
-
+    kArmGearRatio = 200, kCountsPerRev = 2048, kArmScaleFactor = 360 / (410068 / (2048 * 200)),
+        KP = .058, KI = .0018, KD = .005;
   }
 
   public static final class ClawConstants {

@@ -41,6 +41,7 @@ import frc.robot.Constants.NathanControllerConstants;
 import frc.robot.Constants.SpeedConstants;
 import frc.robot.commands.aimRobotCommand;
 import frc.robot.commands.armsCommand;
+import frc.robot.commands.armsPIDCommand;
 import frc.robot.commands.cascadeCommand;
 import frc.robot.commands.cascadePIDCommand;
 import frc.robot.commands.clawCommand;
@@ -54,226 +55,265 @@ import frc.robot.subsystems.drive;
 
 public class RobotContainer {
 
-  private static final drive driveSub = new drive();
-  private static final claw clawSub = new claw();
-  private static final cascade cascadeSub = new cascade();
-  private static final arms armsSub = new arms();
+        private static final drive driveSub = new drive();
+        private static final claw clawSub = new claw();
+        private static final cascade cascadeSub = new cascade();
+        private static final arms armsSub = new arms();
 
-  private static final armsCommand armUpCommand = new armsCommand(armsSub, SpeedConstants.armSpeed);
-  private static final armsCommand armDownCommand = new armsCommand(armsSub, -SpeedConstants.armSpeed);
+        private static final armsCommand armUpCommand = new armsCommand(armsSub, SpeedConstants.armSpeed);
+        private static final armsCommand armDownCommand = new armsCommand(armsSub, -SpeedConstants.armSpeed);
 
-  // private static final limelightTrackingCommand limeTrackCommand = new
-  // limelightTrackingCommand(driveSub);
+        private static final armsPIDCommand armsZeroCommand = new armsPIDCommand(0, armsSub);
+        private static final armsPIDCommand armsHighCommand = new armsPIDCommand(90, armsSub);
 
-  private static final cascadeCommand cascadeUpCommand = new cascadeCommand(cascadeSub, SpeedConstants.cascadeSpeed);
-  private static final cascadeCommand cascadeDownCommand = new cascadeCommand(cascadeSub, -SpeedConstants.cascadeSpeed);
+        // private static final limelightTrackingCommand limeTrackCommand = new
+        // limelightTrackingCommand(driveSub);
 
-  private static final cascadePIDCommand cascadePIDMid = new cascadePIDCommand(1.3, cascadeSub);
-  private static final cascadePIDCommand cascadePIDBase = new cascadePIDCommand(0, cascadeSub);
+        private static final cascadeCommand cascadeUpCommand = new cascadeCommand(cascadeSub,
+                        SpeedConstants.cascadeSpeed);
+        private static final cascadeCommand cascadeDownCommand = new cascadeCommand(cascadeSub,
+                        -SpeedConstants.cascadeSpeed);
 
-  private static final aimRobotCommand limeTestCommand = new aimRobotCommand(driveSub, 15);
+        private static final cascadePIDCommand cascadePIDMid = new cascadePIDCommand(1.3, cascadeSub);
+        private static final cascadePIDCommand cascadePIDZero = new cascadePIDCommand(0, cascadeSub);
 
-  private static final clawCommand clawOpenCommand = new clawCommand(clawSub, SpeedConstants.clawSpeed);
-  private static final clawCommand clawCloseCommand = new clawCommand(clawSub, -SpeedConstants.clawSpeed);
+        private static final aimRobotCommand limeTestCommand = new aimRobotCommand(driveSub, 15);
 
-  // private static final chargeCommand chargeBalanceCommand = new
-  // chargeCommand(driveSub, GyroConstants.gyroAngle);
+        private static final clawCommand clawOpenCommand = new clawCommand(clawSub, SpeedConstants.clawSpeed);
+        private static final clawCommand clawCloseCommand = new clawCommand(clawSub, -SpeedConstants.clawSpeed);
 
-  private static final Joystick nathan = new Joystick(NathanControllerConstants.nathan);
-  private static final Joystick gio = new Joystick(GioControllerConstants.gio);
+        // private static final chargeCommand chargeBalanceCommand = new
+        // chargeCommand(driveSub, GyroConstants.gyroAngle);
 
-  String straightPath = "straight.wpilib.json";
-  String path1 = "NEWPATH.wpilib.json";
-  String AutonPath1 = "AutonPath1.wpilib.json";
-  String AutonPath2 = "AutonPath2.wpilib.json";
-  String OfficialTestingPath = "OfficialTestingAuton.wpilib.json";
+        private static final Joystick nathan = new Joystick(NathanControllerConstants.nathan);
+        private static final Joystick gio = new Joystick(GioControllerConstants.gio);
 
-  RunCommand nathanMove = new RunCommand(
-      () -> driveSub.move(SpeedConstants.driveSpeed * nathan.getRawAxis(NathanControllerConstants.leftDriveAxis),
-          SpeedConstants.driveSpeed * nathan.getRawAxis(NathanControllerConstants.rightDriveAxis)),
-      driveSub);
+        String straightPath = "straight.wpilib.json";
+        String path1 = "NEWPATH.wpilib.json";
+        String AutonPath1 = "AutonPath1.wpilib.json";
+        String AutonPath2 = "AutonPath2.wpilib.json";
+        String OfficialTestingPath = "OfficialTestingAuton.wpilib.json";
 
-  SendableChooser<Command> chooser = new SendableChooser<>();
+        RunCommand nathanMove = new RunCommand(
+                        () -> driveSub.move(
+                                        SpeedConstants.driveSpeed
+                                                        * nathan.getRawAxis(NathanControllerConstants.leftDriveAxis),
+                                        SpeedConstants.driveSpeed
+                                                        * nathan.getRawAxis(NathanControllerConstants.rightDriveAxis)),
+                        driveSub);
 
-  public RobotContainer() {
+        SendableChooser<Command> chooser = new SendableChooser<>();
 
-    // chooser.addOption("Straight Path", null);
-    // chooser.addOption("Straight Path", null);
+        public RobotContainer() {
 
-    // Shuffleboard.getTab("Autonomous").add(chooser);
+                // chooser.addOption("Straight Path", null);
+                // chooser.addOption("Straight Path", null);
 
-    driveSub.setDefaultCommand(nathanMove);
+                // Shuffleboard.getTab("Autonomous").add(chooser);
 
-    chooser.addOption("Official Testing",
-        loadPathPlannerTrajectoryToRamseteCommand(
-            OfficialTestingPath, true));
+                driveSub.setDefaultCommand(nathanMove);
 
-    chooser.addOption("straightPath",
-        loadPathPlannerTrajectoryToRamseteCommand(
-            straightPath, true));
+                chooser.addOption("Official Testing",
+                                loadPathPlannerTrajectoryToRamseteCommand(
+                                                OfficialTestingPath, true));
 
-    chooser.addOption("AutonPath1",
-        loadPathPlannerTrajectoryToRamseteCommand(
-            AutonPath1, true));
+                chooser.addOption("straightPath",
+                                loadPathPlannerTrajectoryToRamseteCommand(
+                                                straightPath, true));
 
-    chooser.addOption("AutonPath2",
-        loadPathPlannerTrajectoryToRamseteCommand(
-            AutonPath2, true));
+                chooser.addOption("AutonPath1",
+                                loadPathPlannerTrajectoryToRamseteCommand(
+                                                AutonPath1, true));
 
-    chooser.addOption("Path1",
-        loadPathPlannerTrajectoryToRamseteCommand(
-            path1, true));
+                chooser.addOption("AutonPath2",
+                                loadPathPlannerTrajectoryToRamseteCommand(
+                                                AutonPath2, true));
 
-    Shuffleboard.getTab("Autonomous").add(chooser);
+                chooser.addOption("Path1",
+                                loadPathPlannerTrajectoryToRamseteCommand(
+                                                path1, true));
 
-    JoystickButton armUp = new JoystickButton(gio, GioControllerConstants.armUpButton);
-    armUp.whileTrue(armUpCommand);
+                Shuffleboard.getTab("Autonomous").add(chooser);
 
-    JoystickButton armDown = new JoystickButton(gio, GioControllerConstants.armDownButton);
-    armDown.whileTrue(armDownCommand);
+                ///////////////// Gio Controls ///////////////////////
 
-    JoystickButton clawOpen = new JoystickButton(gio, GioControllerConstants.clawOpenButton);
-    clawOpen.whileTrue(clawOpenCommand);
+                JoystickButton armUp = new JoystickButton(gio, GioControllerConstants.armUpButton);
+                armUp.whileTrue(armUpCommand);
 
-    JoystickButton clawClose = new JoystickButton(gio, GioControllerConstants.clawCloseButton);
-    clawClose.whileTrue(clawCloseCommand);
+                JoystickButton armDown = new JoystickButton(gio, GioControllerConstants.armDownButton);
+                armDown.whileTrue(armDownCommand);
 
-    JoystickButton cascadeUp = new JoystickButton(nathan, NathanControllerConstants.cascadeUpButton);
-    cascadeUp.whileTrue(cascadeUpCommand);
+                JoystickButton clawOpen = new JoystickButton(gio, GioControllerConstants.clawOpenButton);
+                clawOpen.whileTrue(clawOpenCommand);
 
-    JoystickButton cascadeDown = new JoystickButton(nathan, NathanControllerConstants.cascadeDownButton);
-    cascadeDown.whileTrue(cascadeDownCommand);
+                JoystickButton clawClose = new JoystickButton(gio, GioControllerConstants.clawCloseButton);
+                clawClose.whileTrue(clawCloseCommand);
 
-    /*
-     * JoystickButton chargeBalance = new JoystickButton(nathan,
-     * NathanControllerConstants.gyroBalanceButton);
-     * chargeBalance.whileTrue(chargeBalanceCommand);
-     */
+                JoystickButton armsHigh = new JoystickButton(gio, 1);
+                armsHigh.onTrue(armsHighCommand);
 
-    JoystickButton cascadePIDMid = new JoystickButton(nathan, NathanControllerConstants.gyroBalanceButton);
-    cascadePIDMid.onTrue(RobotContainer.cascadePIDMid);
+                JoystickButton armsZero = new JoystickButton(gio, 2);
+                armsZero.onTrue(armsZeroCommand);
 
-    JoystickButton cascadePIDBase = new JoystickButton(nathan, NathanControllerConstants.cascadeZeroButton);
-    cascadePIDBase.onTrue(RobotContainer.cascadePIDBase);
+                ///////////////// Nathan Controls ///////////////////////
 
-    JoystickButton limeTrack = new JoystickButton(gio, 14);
-    limeTrack.whileTrue(limeTestCommand);
+                JoystickButton cascadeUp = new JoystickButton(nathan, NathanControllerConstants.cascadeUpButton);
+                cascadeUp.whileTrue(cascadeUpCommand);
 
-    configureBindings();
+                JoystickButton cascadeDown = new JoystickButton(nathan, NathanControllerConstants.cascadeDownButton);
+                cascadeDown.whileTrue(cascadeDownCommand);
 
-  }
+                /*
+                 * JoystickButton chargeBalance = new JoystickButton(nathan,
+                 * NathanControllerConstants.gyroBalanceButton);
+                 * chargeBalance.whileTrue(chargeBalanceCommand);
+                 */
 
-  ParallelCommandGroup AutonomousPractice = new ParallelCommandGroup(
-      loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true));
+                ///////////////// Nathan Controls ///////////////////////
 
-  public Command loadPathPlannerTrajectoryToRamseteCommand(String filename, boolean resetOdometry) {
-    Trajectory trajectory;
+                JoystickButton cascadePIDMid = new JoystickButton(nathan,
+                                NathanControllerConstants.cascadeConeMidButton);
+                cascadePIDMid.onTrue(RobotContainer.cascadePIDMid);
 
-    try {
-      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filename);
-      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-      System.out.println("winning");
-    }
+                JoystickButton cascadePIDZero = new JoystickButton(nathan, NathanControllerConstants.cascadeZeroButton);
+                cascadePIDZero.onTrue(RobotContainer.cascadePIDZero);
 
-    catch (Exception exception) {
-      DriverStation.reportError("Unable To Open Trajectory " + filename, exception.getStackTrace());
-      System.out.println("Unable to read from file" + filename);
-      return new InstantCommand();
-    }
+                JoystickButton limeTrack = new JoystickButton(nathan, NathanControllerConstants.limeTrackButton);
+                limeTrack.whileTrue(limeTestCommand);
 
-    RamseteCommand ramseteCommand = new RamseteCommand(trajectory, driveSub::getPose,
-        new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
-        new SimpleMotorFeedforward(KineConstants.ksVolts, KineConstants.kvVoltSecondsPerMeter,
-            KineConstants.kaVoltSecondSquaredPerMeter),
-        KineConstants.kDrive,
-        driveSub::getWheelSpeeds,
-        new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-        new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-        driveSub::tankDriveVolts,
-        driveSub);
+                configureBindings();
 
-    if (resetOdometry) {
-      return new SequentialCommandGroup(
-          new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())), ramseteCommand);
-    }
+        }
 
-    else {
-      return ramseteCommand;
-    }
+        ParallelCommandGroup AutonomousPractice = new ParallelCommandGroup(
+                        loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true));
 
-  }
+        public Command loadPathPlannerTrajectoryToRamseteCommand(String filename, boolean resetOdometry) {
+                Trajectory trajectory;
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link
-   * CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
+                try {
+                        Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filename);
+                        trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+                        System.out.println("winning");
+                }
 
-  }
+                catch (Exception exception) {
+                        DriverStation.reportError("Unable To Open Trajectory " + filename, exception.getStackTrace());
+                        System.out.println("Unable to read from file" + filename);
+                        return new InstantCommand();
+                }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-/*
-    // Create a voltage constraint to ensure we don't accelerate too fast
-    DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
-        new SimpleMotorFeedforward(
-            KineConstants.ksVolts,
-            KineConstants.kvVoltSecondsPerMeter,
-            KineConstants.kaVoltSecondSquaredPerMeter),
-        KineConstants.kDrive,
-        10);
+                RamseteCommand ramseteCommand = new RamseteCommand(
+                                trajectory, driveSub::getPose,
+                                new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
+                                new SimpleMotorFeedforward(KineConstants.ksVolts, KineConstants.kvVoltSecondsPerMeter,
+                                                KineConstants.kaVoltSecondSquaredPerMeter),
+                                KineConstants.kDrive,
+                                driveSub::getWheelSpeeds,
+                                new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+                                new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+                                driveSub::tankDriveVolts,
+                                driveSub);
 
-    TrajectoryConfig config = new TrajectoryConfig(
-        KineConstants.kMaxSpeedMetersPerSecond,
-        KineConstants.kMaxAccelerationMetersPerSecSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(KineConstants.kDrive)
-        // Apply the voltage constraint
-        .addConstraint(autoVoltageConstraint);
+                if (resetOdometry) {
+                        return new SequentialCommandGroup(
+                                        new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())),
+                                        ramseteCommand, new WaitCommand(1));
+                }
+                //      added new wait commmand 1 second
+                //      needs to be tested
+                
 
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
-        // Pass config
-        config);
+                else {
+                        return ramseteCommand;
+                }
 
-    RamseteCommand ramseteCommand = new RamseteCommand(exampleTrajectory, driveSub::getPose,
-        new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
-        new SimpleMotorFeedforward(KineConstants.ksVolts, KineConstants.kvVoltSecondsPerMeter,
-            KineConstants.kaVoltSecondSquaredPerMeter),
-        KineConstants.kDrive,
-        driveSub::getWheelSpeeds,
-        new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-        new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-        driveSub::tankDriveVolts,
-        driveSub);
+        }
 
-        driveSub.resetOdometry(exampleTrajectory.getInitialPose());
+        /**
+         * Use this method to define your trigger->command mappings. Triggers can be
+         * created via the
+         * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+         * an arbitrary
+         * predicate, or via the named factories in {@link
+         * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+         * {@link
+         * CommandXboxController
+         * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+         * PS4} controllers or
+         * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+         * joysticks}.
+         */
+        private void configureBindings() {
 
-    return ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0));
-    */
-    // return chooser.getSelected();
-    //return loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true);
+        }
 
-    SequentialCommandGroup auto = new SequentialCommandGroup(new driveAutonPIDCommand(3, driveSub));
-    return auto;
-  }
+        /**
+         * Use this to pass the autonomous command to the main {@link Robot} class.
+         *
+         * @return the command to run in autonomous
+         */
+        public Command getAutonomousCommand() {
+                /*
+                 * // Create a voltage constraint to ensure we don't accelerate too fast
+                 * DifferentialDriveVoltageConstraint autoVoltageConstraint = new
+                 * DifferentialDriveVoltageConstraint(
+                 * new SimpleMotorFeedforward(
+                 * KineConstants.ksVolts,
+                 * KineConstants.kvVoltSecondsPerMeter,
+                 * KineConstants.kaVoltSecondSquaredPerMeter),
+                 * KineConstants.kDrive,
+                 * 10);
+                 * 
+                 * TrajectoryConfig config = new TrajectoryConfig(
+                 * KineConstants.kMaxSpeedMetersPerSecond,
+                 * KineConstants.kMaxAccelerationMetersPerSecSquared)
+                 * // Add kinematics to ensure max speed is actually obeyed
+                 * .setKinematics(KineConstants.kDrive)
+                 * // Apply the voltage constraint
+                 * .addConstraint(autoVoltageConstraint);
+                 * 
+                 * Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+                 * // Start at the origin facing the +X direction
+                 * new Pose2d(0, 0, new Rotation2d(0)),
+                 * // Pass through these two interior waypoints, making an 's' curve path
+                 * List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+                 * // End 3 meters straight ahead of where we started, facing forward
+                 * new Pose2d(3, 0, new Rotation2d(0)),
+                 * // Pass config
+                 * config);
+                 * 
+                 * RamseteCommand ramseteCommand = new RamseteCommand(exampleTrajectory,
+                 * driveSub::getPose,
+                 * new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
+                 * new SimpleMotorFeedforward(KineConstants.ksVolts,
+                 * KineConstants.kvVoltSecondsPerMeter,
+                 * KineConstants.kaVoltSecondSquaredPerMeter),
+                 * KineConstants.kDrive,
+                 * driveSub::getWheelSpeeds,
+                 * new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+                 * new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+                 * driveSub::tankDriveVolts,
+                 * driveSub);
+                 * 
+                 * driveSub.resetOdometry(exampleTrajectory.getInitialPose());
+                 * 
+                 * return ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0));
+                 */
+                // return chooser.getSelected();
+                // return loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true);
+
+                ParallelCommandGroup autoTest = new ParallelCommandGroup(
+                                new driveAutonPIDCommand(3, driveSub).withTimeout(4),
+                                new armsPIDCommand(110, armsSub).beforeStarting(
+                                                new WaitCommand(2).andThen(
+                                                        new WaitCommand(5), 
+                                                        new clawCommand(clawSub, .3).withTimeout(.2))));
+
+                SequentialCommandGroup auto = new SequentialCommandGroup(
+                                new driveAutonPIDCommand(3, driveSub).withTimeout(4),
+                                new armsPIDCommand(110, armsSub));
+
+                return autoTest;
+        }
 }

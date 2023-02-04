@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Constants.LimelightOriginalConstants;
 import frc.robot.subsystems.drive;
 
 public class aimRobotCommand extends CommandBase {
@@ -88,20 +89,20 @@ public class aimRobotCommand extends CommandBase {
 
       errorDistance = td - drive.currentDistance();
 
-      proportionDistance = errorDistance * Constants.distanceKP;
+      proportionDistance = errorDistance * LimelightOriginalConstants.distanceKP;
 
       double dt = Timer.getFPGATimestamp() - pastTime;
       pastTime = Timer.getFPGATimestamp();
 
-      integralAim += (errorAim * dt) * Constants.shortAimKI;
+      integralAim += (errorAim * dt) * LimelightOriginalConstants.shortAimKI;
 
-      integralDistance += (errorDistance * dt) * Constants.distanceKI;
+      integralDistance += (errorDistance * dt) * LimelightOriginalConstants.distanceKI;
 
       double dxAim = errorAim - oldErrorAim;
       double dxDistance = errorDistance - oldErrorDistance;
 
-      derivativeAim = (dxAim / dt) * Constants.aimKD;
-      derivativeDistance = (dxDistance / dt) * Constants.distanceKD;
+      derivativeAim = (dxAim / dt) * LimelightOriginalConstants.aimKD;
+      derivativeDistance = (dxDistance / dt) * LimelightOriginalConstants.distanceKD;
 
       oldErrorAim = errorAim;
       oldErrorDistance = errorDistance;
@@ -114,23 +115,23 @@ public class aimRobotCommand extends CommandBase {
 
     else if (drive.angleOff() > -20) {
 
-      errorAim = Constants.targetAngle + (-1 * drive.angleOff()); // target angle offset, angle Off = error angle
-      proportionAim = errorAim * Constants.shortAimKP; // proportion
+      errorAim = LimelightOriginalConstants.targetAngle + (-1 * drive.angleOff()); // target angle offset, angle Off = error angle
+      proportionAim = errorAim * LimelightOriginalConstants.shortAimKP; // proportion
 
       errorDistance = td - drive.currentDistance();
 
-      proportionDistance = errorDistance * Constants.distanceKP;
+      proportionDistance = errorDistance * LimelightOriginalConstants.distanceKP;
 
       double dt = Timer.getFPGATimestamp() - pastTime;
       pastTime = Timer.getFPGATimestamp();
 
-      integralAim += (errorAim * dt) * Constants.shortAimKI;
-      integralDistance += (errorDistance * dt) * Constants.distanceKI;
+      integralAim += (errorAim * dt) * LimelightOriginalConstants.shortAimKI;
+      integralDistance += (errorDistance * dt) * LimelightOriginalConstants.distanceKI;
 
       double dxAim = errorAim - oldErrorAim;
       double dxDistance = errorDistance - oldErrorDistance;
-      derivativeAim = (dxAim / dt) * Constants.aimKD;
-      derivativeDistance = (dxDistance / dt) * Constants.distanceKD;
+      derivativeAim = (dxAim / dt) * LimelightOriginalConstants.aimKD;
+      derivativeDistance = (dxDistance / dt) * LimelightOriginalConstants.distanceKD;
       oldErrorAim = errorAim;
       oldErrorDistance = errorDistance;
 
@@ -144,22 +145,22 @@ public class aimRobotCommand extends CommandBase {
 
     else {
       drive.move(0, 0);
-      errorAim = Constants.targetAngle + (-1 * drive.angleOff());
-      proportionAim = errorAim * Constants.longAimKP;
+      errorAim = LimelightOriginalConstants.targetAngle + (-1 * drive.angleOff());
+      proportionAim = errorAim * LimelightOriginalConstants.longAimKP;
 
       errorDistance = td - drive.currentDistance();
-      proportionDistance = errorDistance * Constants.distanceKP;
+      proportionDistance = errorDistance * LimelightOriginalConstants.distanceKP;
 
       double dt = Timer.getFPGATimestamp() - pastTime;
       pastTime = Timer.getFPGATimestamp();
 
-      integralAim += (errorAim * dt) * Constants.longAimKI;
-      integralDistance += (errorDistance * dt) * Constants.distanceKI;
+      integralAim += (errorAim * dt) * LimelightOriginalConstants.longAimKI;
+      integralDistance += (errorDistance * dt) * LimelightOriginalConstants.distanceKI;
 
       double dxAim = errorAim - oldErrorAim;
       double dxDistance = errorDistance - oldErrorDistance;
-      derivativeAim = Math.abs((dxAim / dt) * Constants.aimKD);
-      derivativeDistance = (dxDistance / dt) * Constants.distanceKD;
+      derivativeAim = Math.abs((dxAim / dt) * LimelightOriginalConstants.aimKD);
+      derivativeDistance = (dxDistance / dt) * LimelightOriginalConstants.distanceKD;
       oldErrorAim = errorAim;
       oldErrorDistance = errorDistance;
 
@@ -175,7 +176,6 @@ public class aimRobotCommand extends CommandBase {
     SmartDashboard.putNumber("Aim Error", errorAim);
     SmartDashboard.putNumber("Aim speed", speedAim);
     SmartDashboard.putNumber("kd", derivativeAim);
-
   }
 
   // ends command with drive off

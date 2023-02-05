@@ -68,9 +68,9 @@ public final class Constants {
 
         ///////////// Arm Buttons /////////////
 
-        armUpButton = 8, armDownButton = 6,
+        armUpButton = 6, armDownButton = 5,
 
-        clawOpenButton = 7, clawCloseButton = 5;
+        clawOpenButton = 7, clawCloseButton = 8;
 
   }
 
@@ -93,7 +93,7 @@ public final class Constants {
   public static final class AutonConstatns {
     public static final double
 
-    KP = .5, KI = 0.13, KD = 0.14;
+    KP = .37, KI = 0.1, KD = 0.17;
 
     // KP = .97, KI = 0, KD = .2;//KD = .035;
   }
@@ -154,8 +154,8 @@ public final class Constants {
 
     public static final double
 
-    kArmGearRatio = 200, kCountsPerRev = 2048, kArmScaleFactor = 360 / (410068 / (2048 * 200)),
-        KP = .058, KI = .0018, KD = .005;
+    kArmGearRatio = 200, kCountsPerRev = 2048, kArmScaleFactor = (360 / (410068 / (2048 * 200))),
+        KP = .030, KI = .002, KD = .001;
   }
 
   public static final class ClawConstants {
@@ -166,8 +166,8 @@ public final class Constants {
 
     public static final double
 
-    clawKP = .5, clawKI = 0, clawKD = 0,
-        kClawGearRatio = 100, kCountsPerRev = 2048, kClawScaleFactor = 1;
+    clawKP = .04, clawKI = .0005, clawKD = 0,
+        kClawGearRatio = 100, kCountsPerRev = 2048, kClawScaleFactor = 600;
 
   }
 

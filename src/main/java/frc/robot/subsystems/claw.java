@@ -15,8 +15,7 @@ public class claw extends SubsystemBase {
 
   WPI_TalonFX claw = new WPI_TalonFX(ClawConstants.clawID);
 
-  public claw() {
-    claw.setSelectedSensorPosition(0);
+  public claw() {4
     claw.setNeutralMode(NeutralMode.Brake);
   }
 
@@ -25,8 +24,8 @@ public class claw extends SubsystemBase {
   }
 
   public double clawTickToDegrees() {
-    double motorRotations = claw.getSelectedSensorPosition() / ClawConstants.kCountsPerRev;
-    double cascadeTicksToInches = motorRotations / (ClawConstants.kClawGearRatio * ClawConstants.kClawScaleFactor);
+    double motorRotations = claw.getSelectedSensorPosition() / (ClawConstants.kCountsPerRev * ClawConstants.kClawGearRatio);
+    double cascadeTicksToInches = motorRotations * ClawConstants.kClawScaleFactor;
 
     return cascadeTicksToInches;
   }

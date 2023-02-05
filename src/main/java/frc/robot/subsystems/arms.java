@@ -34,7 +34,6 @@ public class arms extends SubsystemBase {
 
     leftArm.setInverted(true);
     leftArm.follow(rightArm, FollowerType.PercentOutput);
-    breakMode();
 
   }
 

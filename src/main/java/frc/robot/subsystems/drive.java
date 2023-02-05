@@ -63,14 +63,16 @@ public class drive extends SubsystemBase {
     followSides();
     // gyro.reset();
 
+    
+
     gyro.calibrate();
     gyro.reset();
     rightSide.setInverted(true);
 
-    m_Odometry = new DifferentialDriveOdometry(gyro.getRotation2d(), leftNativeDistanceInMeters(),
-        rightNativeDistanceInMeters());
+    m_Odometry = new DifferentialDriveOdometry(gyro.getRotation2d(), leftNativeDistanceInMetersOdometry(),
+        rightNativeDistanceInMetersOdometry());
 
-    m_Odometry.resetPosition(gyro.getRotation2d(), leftNativeDistanceInMeters(), rightNativeDistanceInMeters(),
+    m_Odometry.resetPosition(gyro.getRotation2d(), leftNativeDistanceInMetersOdometry(), rightNativeDistanceInMetersOdometry(),
         new Pose2d());
   }
 
@@ -155,6 +157,12 @@ public class drive extends SubsystemBase {
     drive.setMaxOutput(maxOutput);
   }
 
+  public void tankDriveVoltsOdometry(double leftVolts, double rightVolts) {
+    leftFront.setVoltage(leftVolts);
+    rightFront.setVoltage(rightVolts);
+    drive.feed();
+  }
+
   public double leftNativeDistanceInMeters() {
     double motorRotations = leftFront.getSelectedSensorPosition() / KineConstants.kCountsPerRev;
     double wheelRotations = motorRotations / KineConstants.kGearRatio;
@@ -173,13 +181,53 @@ public class drive extends SubsystemBase {
     return positionMeters;
   }
 
-  public double leftNativeVelocityInMeters() {
+  public double leftNativeDistanceInMetersOdometry() {
+    double motorRotations = leftFront.getSelectedSensorPosition() / KineConstants.kCountsPerRev;
+    double wheelRotations = motorRotations / KineConstants.kGearRatio;
+
+    double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
+
+    return -positionMeters;
+  }
+
+  public double rightNativeDistanceInMetersOdometry() {
+    double motorRotations = rightFront.getSelectedSensorPosition() / KineConstants.kCountsPerRev;
+    double wheelRotations = motorRotations / KineConstants.kGearRatio;
+
+    double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
+
+    return positionMeters;
+  }
+
+  public double leftNativeVelocityInMetersOdometry() {
     double motorRotations = rightFront.getSelectedSensorVelocity() / KineConstants.kCountsPerRev;
     double wheelRotations = motorRotations / KineConstants.kGearRatio;
 
     double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
 
     return positionMeters / 60;
+  }
+
+  public double rightNativeVelocityInMetersOdometry() {
+    double motorRotations = rightFront.getSelectedSensorVelocity() / KineConstants.kCountsPerRev;
+    double wheelRotations = motorRotations / KineConstants.kGearRatio;
+
+    double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
+
+    return positionMeters / 60;
+  }
+
+  public DifferentialDriveWheelSpeeds getWheelSpeedsOdometry() {
+    return new DifferentialDriveWheelSpeeds(leftNativeVelocityInMeters(), rightNativeVelocityInMeters());
+  }
+
+  public double leftNativeVelocityInMeters() {
+    double motorRotations = rightFront.getSelectedSensorVelocity() / KineConstants.kCountsPerRev;
+    double wheelRotations = motorRotations / KineConstants.kGearRatio;
+
+    double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(KineConstants.kWheelRadiusInches));
+
+    return -positionMeters / 60;
   }
 
   public double rightNativeVelocityInMeters() {
@@ -200,13 +248,16 @@ public class drive extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return m_Odometry.getPoseMeters();
+    return m_Odometry.getPoseMeters();// check this
   }
+  
 
   public void resetOdometry(Pose2d pose) {
+    
     resetEncoders();
-    gyro.reset();
-    m_Odometry.resetPosition(gyro.getRotation2d(), leftNativeDistanceInMeters(), rightNativeDistanceInMeters(), pose);
+    gyro.reset();//
+    m_Odometry.resetPosition(gyro.getRotation2d(), leftNativeDistanceInMetersOdometry(), rightNativeDistanceInMetersOdometry(), pose);
+    System.out.println("reset started");
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
@@ -218,7 +269,7 @@ public class drive extends SubsystemBase {
   }
 
   public void zeroHeading() {
-    gyro.calibrate();
+    //gyro.calibrate();
     gyro.reset();
   }
 
@@ -274,19 +325,20 @@ public class drive extends SubsystemBase {
     SmartDashboard.putNumber("Pitch", getVertical());
     SmartDashboard.putBoolean("Lime Works", result.hasTargets());
 
-    m_Odometry.update(gyro.getRotation2d(), leftNativeDistanceInMeters(),
-        rightNativeDistanceInMeters());
+    m_Odometry.update(gyro.getRotation2d(), leftNativeDistanceInMetersOdometry(),
+        rightNativeDistanceInMetersOdometry());
 
     SmartDashboard.putNumber("Pose X", m_Odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Pose Y", m_Odometry.getPoseMeters().getY());
     SmartDashboard.putNumber("Pose Gyro", pigeon.getRotation2d().getDegrees());
+    SmartDashboard.putNumber(" Gyro pose thingy", gyro.getRotation2d().getDegrees());
 
     SmartDashboard.putNumber("Gyro Rate", getTurnRate());
 
-    SmartDashboard.putNumber("Left Side Encoders Meters", leftNativeDistanceInMeters());
-    SmartDashboard.putNumber("Right Side Encoders Meters", rightNativeDistanceInMeters());
+    SmartDashboard.putNumber("Left Side Encoders Meters", leftNativeDistanceInMetersOdometry());
+    SmartDashboard.putNumber("Right Side Encoders Meters", rightNativeDistanceInMetersOdometry());
 
-    SmartDashboard.putNumber("Left Side Encoders Velocity", leftNativeVelocityInMeters());
-    SmartDashboard.putNumber("Right Side Encoders Velocity", rightNativeVelocityInMeters());
+    SmartDashboard.putNumber("Left Side Encoders Velocity", leftNativeVelocityInMetersOdometry());
+    SmartDashboard.putNumber("Right Side Encoders Velocity", rightNativeVelocityInMetersOdometry());
   }
 }

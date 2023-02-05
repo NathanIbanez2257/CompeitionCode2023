@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ClawConstants;
 import frc.robot.subsystems.claw;
@@ -27,13 +28,16 @@ public class clawPIDCommand extends CommandBase {
   @Override
   public void initialize() {
     clawPID.reset();
-    clawPID.setTolerance(.375);  
+    clawPID.setTolerance(4);  
   }
 
   @Override
   public void execute() {
     double speed = clawPID.calculate(clawSub.clawTickToDegrees());
     clawSub.move(speed);
+
+    SmartDashboard.putBoolean("Claw Tolerance", clawPID.atSetpoint());
+    SmartDashboard.putNumber("Claw Error", clawPID.getPositionError());
   }
 
   @Override

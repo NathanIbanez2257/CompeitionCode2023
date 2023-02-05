@@ -45,6 +45,7 @@ import frc.robot.commands.armsPIDCommand;
 import frc.robot.commands.cascadeCommand;
 import frc.robot.commands.cascadePIDCommand;
 import frc.robot.commands.clawCommand;
+import frc.robot.commands.clawPIDCommand;
 import frc.robot.commands.driveAutonPIDCommand;
 import frc.robot.commands.limelightTrackingCommand;
 import frc.robot.commands.meterDriveCommand;
@@ -63,8 +64,8 @@ public class RobotContainer {
         private static final armsCommand armUpCommand = new armsCommand(armsSub, SpeedConstants.armSpeed);
         private static final armsCommand armDownCommand = new armsCommand(armsSub, -SpeedConstants.armSpeed);
 
-        private static final armsPIDCommand armsZeroCommand = new armsPIDCommand(0, armsSub);
-        private static final armsPIDCommand armsHighCommand = new armsPIDCommand(90, armsSub);
+        private static final armsPIDCommand armsZeroCommand = new armsPIDCommand(11, armsSub);
+        private static final armsPIDCommand armsHighCommand = new armsPIDCommand(143, armsSub);
 
         // private static final limelightTrackingCommand limeTrackCommand = new
         // limelightTrackingCommand(driveSub);
@@ -82,17 +83,19 @@ public class RobotContainer {
         private static final clawCommand clawOpenCommand = new clawCommand(clawSub, SpeedConstants.clawSpeed);
         private static final clawCommand clawCloseCommand = new clawCommand(clawSub, -SpeedConstants.clawSpeed);
 
+        private static final clawPIDCommand clawOpenPIDCommand = new clawPIDCommand(105, clawSub);
+
         // private static final chargeCommand chargeBalanceCommand = new
         // chargeCommand(driveSub, GyroConstants.gyroAngle);
 
         private static final Joystick nathan = new Joystick(NathanControllerConstants.nathan);
         private static final Joystick gio = new Joystick(GioControllerConstants.gio);
-
         String straightPath = "straight.wpilib.json";
         String path1 = "NEWPATH.wpilib.json";
         String AutonPath1 = "AutonPath1.wpilib.json";
         String AutonPath2 = "AutonPath2.wpilib.json";
         String OfficialTestingPath = "OfficialTestingAuton.wpilib.json";
+        String andresPath = "testwitandres.wpilib.json";
 
         RunCommand nathanMove = new RunCommand(
                         () -> driveSub.move(
@@ -113,9 +116,13 @@ public class RobotContainer {
 
                 driveSub.setDefaultCommand(nathanMove);
 
+                chooser.addOption("Andres Testing",
+                                loadPathPlannerTrajectoryToRamseteCommand(
+                                                andresPath, true));
+
                 chooser.addOption("Official Testing",
                                 loadPathPlannerTrajectoryToRamseteCommand(
-                                                OfficialTestingPath, true));
+                                                OfficialTestingPath, false));
 
                 chooser.addOption("straightPath",
                                 loadPathPlannerTrajectoryToRamseteCommand(
@@ -149,11 +156,14 @@ public class RobotContainer {
                 JoystickButton clawClose = new JoystickButton(gio, GioControllerConstants.clawCloseButton);
                 clawClose.whileTrue(clawCloseCommand);
 
-                JoystickButton armsHigh = new JoystickButton(gio, 1);
+                JoystickButton armsHigh = new JoystickButton(gio, 4);
                 armsHigh.onTrue(armsHighCommand);
 
                 JoystickButton armsZero = new JoystickButton(gio, 2);
                 armsZero.onTrue(armsZeroCommand);
+
+                JoystickButton clawOpenPID = new JoystickButton(gio, 1);
+                clawOpenPID.onTrue(clawOpenPIDCommand);
 
                 ///////////////// Nathan Controls ///////////////////////
 
@@ -195,6 +205,7 @@ public class RobotContainer {
                         Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filename);
                         trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
                         System.out.println("winning");
+
                 }
 
                 catch (Exception exception) {
@@ -204,29 +215,41 @@ public class RobotContainer {
                 }
 
                 RamseteCommand ramseteCommand = new RamseteCommand(
+
                                 trajectory, driveSub::getPose,
                                 new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
                                 new SimpleMotorFeedforward(KineConstants.ksVolts, KineConstants.kvVoltSecondsPerMeter,
                                                 KineConstants.kaVoltSecondSquaredPerMeter),
                                 KineConstants.kDrive,
-                                driveSub::getWheelSpeeds,
+                                driveSub::getWheelSpeedsOdometry,
                                 new PIDController(KineConstants.kpDriveVelocity, 0, 0),
                                 new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-                                driveSub::tankDriveVolts,
+                                driveSub::tankDriveVoltsOdometry,
                                 driveSub);
 
                 if (resetOdometry) {
                         return new SequentialCommandGroup(
-                                        new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())),
-                                        ramseteCommand, new WaitCommand(1));
+                                        new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())
+
+                                        ),
+
+                                        new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())
+
+                                        ), new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())
+
+                                        ).handleInterrupt(() -> System.out.println("\ngot interrupted\n")),
+
+                                        ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0)));
                 }
-                //      added new wait commmand 1 second
-                //      needs to be tested
-                
+                // added new wait commmand 1 second
+                // needs to be tested
 
                 else {
                         return ramseteCommand;
                 }
+
+                // driveSub.resetOdometry(trajectory.getInitialPose());
+                // return ramseteCommand.andThen(()-> driveSub.tankDriveVolts(0, 0));
 
         }
 
@@ -250,70 +273,78 @@ public class RobotContainer {
 
         /**
          * Use this to pass the autonomous command to the main {@link Robot} class.
-         *
-         * @return the command to run in autonomous
+         * // *
+         * // * @return the command to run in autonomous
+         * //
          */
         public Command getAutonomousCommand() {
-                /*
-                 * // Create a voltage constraint to ensure we don't accelerate too fast
-                 * DifferentialDriveVoltageConstraint autoVoltageConstraint = new
-                 * DifferentialDriveVoltageConstraint(
-                 * new SimpleMotorFeedforward(
-                 * KineConstants.ksVolts,
-                 * KineConstants.kvVoltSecondsPerMeter,
-                 * KineConstants.kaVoltSecondSquaredPerMeter),
-                 * KineConstants.kDrive,
-                 * 10);
-                 * 
-                 * TrajectoryConfig config = new TrajectoryConfig(
-                 * KineConstants.kMaxSpeedMetersPerSecond,
-                 * KineConstants.kMaxAccelerationMetersPerSecSquared)
-                 * // Add kinematics to ensure max speed is actually obeyed
-                 * .setKinematics(KineConstants.kDrive)
-                 * // Apply the voltage constraint
-                 * .addConstraint(autoVoltageConstraint);
-                 * 
-                 * Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-                 * // Start at the origin facing the +X direction
-                 * new Pose2d(0, 0, new Rotation2d(0)),
-                 * // Pass through these two interior waypoints, making an 's' curve path
-                 * List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-                 * // End 3 meters straight ahead of where we started, facing forward
-                 * new Pose2d(3, 0, new Rotation2d(0)),
-                 * // Pass config
-                 * config);
-                 * 
-                 * RamseteCommand ramseteCommand = new RamseteCommand(exampleTrajectory,
-                 * driveSub::getPose,
-                 * new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
-                 * new SimpleMotorFeedforward(KineConstants.ksVolts,
-                 * KineConstants.kvVoltSecondsPerMeter,
-                 * KineConstants.kaVoltSecondSquaredPerMeter),
-                 * KineConstants.kDrive,
-                 * driveSub::getWheelSpeeds,
-                 * new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-                 * new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-                 * driveSub::tankDriveVolts,
-                 * driveSub);
-                 * 
-                 * driveSub.resetOdometry(exampleTrajectory.getInitialPose());
-                 * 
-                 * return ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0));
-                 */
-                // return chooser.getSelected();
+
+                // // Create a voltage constraint to ensure we don't accelerate too fast
+                // DifferentialDriveVoltageConstraint autoVoltageConstraint = new
+                // DifferentialDriveVoltageConstraint(
+                // new SimpleMotorFeedforward(
+                // KineConstants.ksVolts,
+                // KineConstants.kvVoltSecondsPerMeter,
+                // KineConstants.kaVoltSecondSquaredPerMeter),
+                // KineConstants.kDrive,
+                // 10);
+
+                // TrajectoryConfig config = new TrajectoryConfig(
+                // KineConstants.kMaxSpeedMetersPerSecond,
+                // KineConstants.kMaxAccelerationMetersPerSecSquared)
+                // // Add kinematics to ensure max speed is actually obeyed
+                // .setKinematics(KineConstants.kDrive)
+                // // Apply the voltage constraint
+                // .addConstraint(autoVoltageConstraint);
+
+                // Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+                // // Start at the origin facing the +X direction
+                // new Pose2d(0, 0, new Rotation2d(0)),
+                // // Pass through these two interior waypoints, making an 's' curve path
+                // List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+                // // End 3 meters straight ahead of where we started, facing forward
+                // new Pose2d(3, 0, new Rotation2d(0)),
+                // // Pass config
+                // config);
+
+                // RamseteCommand ramseteCommand = new RamseteCommand(exampleTrajectory,
+                // driveSub::getPose,
+                // new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
+                // new SimpleMotorFeedforward(KineConstants.ksVolts,
+                // KineConstants.kvVoltSecondsPerMeter,
+                // KineConstants.kaVoltSecondSquaredPerMeter),
+                // KineConstants.kDrive,
+                // driveSub::getWheelSpeeds,
+                // new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+                // new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+                // driveSub::tankDriveVolts,
+                // driveSub);
+
+                // driveSub.resetOdometry(exampleTrajectory.getInitialPose());
+
+                // return ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0));
+
+                //return loadPathPlannerTrajectoryToRamseteCommand(andresPath, true);
                 // return loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true);
 
-                ParallelCommandGroup autoTest = new ParallelCommandGroup(
-                                new driveAutonPIDCommand(3, driveSub).withTimeout(4),
-                                new armsPIDCommand(110, armsSub).beforeStarting(
-                                                new WaitCommand(2).andThen(
-                                                        new WaitCommand(5), 
-                                                        new clawCommand(clawSub, .3).withTimeout(.2))));
-
-                SequentialCommandGroup auto = new SequentialCommandGroup(
-                                new driveAutonPIDCommand(3, driveSub).withTimeout(4),
-                                new armsPIDCommand(110, armsSub));
-
-                return autoTest;
-        }
+                
+                 ParallelCommandGroup FirstStageAuton = new ParallelCommandGroup(
+                 new driveAutonPIDCommand(3, driveSub).withTimeout(4.4),
+                 new armsPIDCommand(120, armsSub).withTimeout(2.5).beforeStarting(new
+                 WaitCommand(.2)).
+                 andThen(new clawCommand(clawSub, .4).withTimeout(.3)));
+                 
+                 SequentialCommandGroup auton1 = new SequentialCommandGroup(FirstStageAuton,
+                 new driveAutonPIDCommand(-2, driveSub).withTimeout(3));
+                
+                 
+                 
+                 SequentialCommandGroup auto = new SequentialCommandGroup(
+                 new driveAutonPIDCommand(3, driveSub).withTimeout(4),
+                 new armsPIDCommand(110, armsSub).withTimeout(3),
+                 new WaitCommand(2),
+                 new clawCommand(clawSub, .3).withTimeout(.4));
+                 
+                 return auton1;
+                       }
 }

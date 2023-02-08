@@ -21,7 +21,7 @@ public class cascade extends SubsystemBase {
     cascade.configForwardSoftLimitEnable(true);
     cascade.configReverseSoftLimitEnable(true);
 
-    // cascade.configForwardSoftLimitThreshold(117980);
+    cascade.configForwardSoftLimitThreshold(118166);
     cascade.configReverseSoftLimitThreshold(1023);
 
   }

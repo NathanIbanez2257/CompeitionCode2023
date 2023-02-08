@@ -115,7 +115,8 @@ public class aimRobotCommand extends CommandBase {
 
     else if (drive.angleOff() > -20) {
 
-      errorAim = LimelightOriginalConstants.targetAngle + (-1 * drive.angleOff()); // target angle offset, angle Off = error angle
+      errorAim = LimelightOriginalConstants.targetAngle + (-1 * drive.angleOff()); // target angle offset, angle Off =
+                                                                                   // error angle
       proportionAim = errorAim * LimelightOriginalConstants.shortAimKP; // proportion
 
       errorDistance = td - drive.currentDistance();
@@ -159,6 +160,7 @@ public class aimRobotCommand extends CommandBase {
 
       double dxAim = errorAim - oldErrorAim;
       double dxDistance = errorDistance - oldErrorDistance;
+
       derivativeAim = Math.abs((dxAim / dt) * LimelightOriginalConstants.aimKD);
       derivativeDistance = (dxDistance / dt) * LimelightOriginalConstants.distanceKD;
       oldErrorAim = errorAim;
@@ -178,13 +180,11 @@ public class aimRobotCommand extends CommandBase {
     SmartDashboard.putNumber("kd", derivativeAim);
   }
 
-  // ends command with drive off
   @Override
   public void end(boolean interrupted) {
     drive.move(0, 0);
   }
 
-  // stop command calling
   @Override
   public boolean isFinished() {
     return false;

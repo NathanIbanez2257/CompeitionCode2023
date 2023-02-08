@@ -28,7 +28,7 @@ public final class Constants {
 
         leftDriveAxis = 1, rightDriveAxis = 5, // drive axis for tank drive
 
-        forwardAxis = 1, turnAxis = 0, // drive Axis for arcade drive
+        forwardAxis = 1, turnAxis = 2, // drive Axis for arcade drive
 
         ///////////// Cascade Buttons /////////////
 
@@ -48,7 +48,7 @@ public final class Constants {
 
         clawOpenButton = 8, clawCloseButton = 7,
 
-        gyroBalanceButton = 14, limeTrackButton = 14, limeDistanceButton = 13; // charge station balance button
+        gyroBalanceButton = 9, limeTrackButton = 14, limeDistanceButton = 13; // charge station balance button
 
   }
 
@@ -93,7 +93,9 @@ public final class Constants {
   public static final class AutonConstatns {
     public static final double
 
-    KP = .37, KI = 0.1, KD = 0.17;
+    KP = .72, KI = 0.5, KD = 0.002;
+
+    // kp .37 kd .17
 
     // KP = .97, KI = 0, KD = .2;//KD = .035;
   }
@@ -128,7 +130,7 @@ public final class Constants {
 
     public static final double
 
-    KP = 4.8, KI = .25, KD = .11,
+    KP = 4.8, KI = .27, KD = .11,
 
         ksVolts = 0.15285,
 
@@ -155,7 +157,7 @@ public final class Constants {
     public static final double
 
     kArmGearRatio = 200, kCountsPerRev = 2048, kArmScaleFactor = (360 / (410068 / (2048 * 200))),
-        KP = .030, KI = .002, KD = .001;
+        KP = .02, KI = .0015, KD = .001;
   }
 
   public static final class ClawConstants {
@@ -166,7 +168,7 @@ public final class Constants {
 
     public static final double
 
-    clawKP = .04, clawKI = .0005, clawKD = 0,
+    clawKP = .04, clawKI = .0007, clawKD = 0,
         kClawGearRatio = 100, kCountsPerRev = 2048, kClawScaleFactor = 600;
 
   }
@@ -177,7 +179,9 @@ public final class Constants {
 
     gyroAngle = 0,
 
-        gyroKP = .1, gyroKI = .04;
+        shortGyroKP = .015, shortGyroKI = .005, shortGyroKD = .00,
+
+        longGyroKP = .005, longGyroKI = .005, longGyroKD = .00;
   }
 
   public static final class SpeedConstants {

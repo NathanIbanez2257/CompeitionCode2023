@@ -15,10 +15,8 @@ public class chargeCommand extends CommandBase {
 
   double pGyro, iGyro, dGyro,
 
-  errorGyro, oldErrorGyro, speedGyro, pastTime, levelGyro;
+      errorGyro, oldErrorGyro, speedGyro, pastTime, levelGyro;
 
-  
-  /** Creates a new chargeCommand. */
   public chargeCommand(drive drive, double levelAngle) {
 
     driveSub = drive;
@@ -26,38 +24,56 @@ public class chargeCommand extends CommandBase {
     addRequirements(driveSub);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     oldErrorGyro = 0;
     pastTime = Timer.getFPGATimestamp();
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(Math.abs(driveSub.getVertical()) != 0)
-    {
-      errorGyro = GyroConstants.gyroAngle + (-1 * driveSub.getVertical());
-      
-      pGyro = errorGyro * GyroConstants.gyroKP;
+    if (Math.abs(driveSub.getVertical()) > 1) {
 
-      double dt = Timer.getFPGATimestamp() - pastTime;
-      pastTime = Timer.getFPGATimestamp();
+      if (Math.abs(driveSub.getVertical()) < 6) {
+        errorGyro = GyroConstants.gyroAngle + (driveSub.getVertical());
 
-      iGyro += (errorGyro *dt) * GyroConstants.gyroKI;
+        pGyro = errorGyro * GyroConstants.shortGyroKP;
 
+        double dt = Timer.getFPGATimestamp() - pastTime;
+        pastTime = Timer.getFPGATimestamp();
 
-      oldErrorGyro = errorGyro;
-      
-      speedGyro = pGyro + iGyro;
+        iGyro += (errorGyro * dt) * GyroConstants.shortGyroKI;
 
-      driveSub.move(speedGyro, speedGyro);
+        oldErrorGyro = errorGyro;
 
+        speedGyro = pGyro + iGyro;
+
+        driveSub.move(speedGyro, speedGyro);
+      }
+
+      else {
+        errorGyro = GyroConstants.gyroAngle + (driveSub.getVertical());
+
+        pGyro = errorGyro * GyroConstants.longGyroKP;
+
+        double dt = Timer.getFPGATimestamp() - pastTime;
+        pastTime = Timer.getFPGATimestamp();
+
+        iGyro += (errorGyro * dt) * GyroConstants.longGyroKI;
+
+        double dxDistance = errorGyro - oldErrorGyro;
+        dGyro = (dxDistance / dt) * GyroConstants.longGyroKD;
+
+        speedGyro = pGyro + iGyro - dGyro;
+
+        oldErrorGyro = errorGyro;
+        // speedDistance = proportionDistance + integralDistance + derivativeDistance;
+
+        driveSub.move(speedGyro, speedGyro); // + speedDistance, -1* speedAim + speedDistance
+      }
     }
 
-    else
-    {
+    else {
       driveSub.move(0, 0);
     }
 
@@ -66,14 +82,11 @@ public class chargeCommand extends CommandBase {
 
   }
 
-  
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     driveSub.move(0, 0);
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

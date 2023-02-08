@@ -15,7 +15,7 @@ public class claw extends SubsystemBase {
 
   WPI_TalonFX claw = new WPI_TalonFX(ClawConstants.clawID);
 
-  public claw() {4
+  public claw() {
     claw.setNeutralMode(NeutralMode.Brake);
   }
 

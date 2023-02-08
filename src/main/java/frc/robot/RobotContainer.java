@@ -5,8 +5,6 @@
 package frc.robot;
 
 import java.nio.file.Path;
-import java.util.List;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -17,11 +15,9 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GioControllerConstants;
+import frc.robot.Constants.GyroConstants;
 import frc.robot.Constants.KineConstants;
 import frc.robot.Constants.NathanControllerConstants;
 import frc.robot.Constants.SpeedConstants;
@@ -44,6 +41,7 @@ import frc.robot.commands.armsCommand;
 import frc.robot.commands.armsPIDCommand;
 import frc.robot.commands.cascadeCommand;
 import frc.robot.commands.cascadePIDCommand;
+import frc.robot.commands.chargeCommand;
 import frc.robot.commands.clawCommand;
 import frc.robot.commands.clawPIDCommand;
 import frc.robot.commands.driveAutonPIDCommand;
@@ -64,8 +62,10 @@ public class RobotContainer {
         private static final armsCommand armUpCommand = new armsCommand(armsSub, SpeedConstants.armSpeed);
         private static final armsCommand armDownCommand = new armsCommand(armsSub, -SpeedConstants.armSpeed);
 
-        private static final armsPIDCommand armsZeroCommand = new armsPIDCommand(11, armsSub);
+        private static final armsPIDCommand armsZeroCommand = new armsPIDCommand(0, armsSub);
         private static final armsPIDCommand armsHighCommand = new armsPIDCommand(143, armsSub);
+
+        // 143
 
         // private static final limelightTrackingCommand limeTrackCommand = new
         // limelightTrackingCommand(driveSub);
@@ -80,16 +80,16 @@ public class RobotContainer {
 
         private static final aimRobotCommand limeTestCommand = new aimRobotCommand(driveSub, 15);
 
-        private static final clawCommand clawOpenCommand = new clawCommand(clawSub, SpeedConstants.clawSpeed);
-        private static final clawCommand clawCloseCommand = new clawCommand(clawSub, -SpeedConstants.clawSpeed);
+        private static final clawCommand clawOpenCommand = new clawCommand(SpeedConstants.clawSpeed, clawSub);
+        private static final clawCommand clawCloseCommand = new clawCommand(-SpeedConstants.clawSpeed, clawSub);
 
-        private static final clawPIDCommand clawOpenPIDCommand = new clawPIDCommand(105, clawSub);
+        private static final clawPIDCommand clawOpenPIDCommand = new clawPIDCommand(80, clawSub);
 
-        // private static final chargeCommand chargeBalanceCommand = new
-        // chargeCommand(driveSub, GyroConstants.gyroAngle);
+        private static final chargeCommand chargeBalanceCommand = new chargeCommand(driveSub, GyroConstants.gyroAngle);
 
         private static final Joystick nathan = new Joystick(NathanControllerConstants.nathan);
         private static final Joystick gio = new Joystick(GioControllerConstants.gio);
+
         String straightPath = "straight.wpilib.json";
         String path1 = "NEWPATH.wpilib.json";
         String AutonPath1 = "AutonPath1.wpilib.json";
@@ -98,11 +98,11 @@ public class RobotContainer {
         String andresPath = "testwitandres.wpilib.json";
 
         RunCommand nathanMove = new RunCommand(
-                        () -> driveSub.move(
+                        () -> driveSub.arcadeMove(
                                         SpeedConstants.driveSpeed
-                                                        * nathan.getRawAxis(NathanControllerConstants.leftDriveAxis),
+                                                        * nathan.getRawAxis(NathanControllerConstants.forwardAxis),
                                         SpeedConstants.driveSpeed
-                                                        * nathan.getRawAxis(NathanControllerConstants.rightDriveAxis)),
+                                                        * nathan.getRawAxis(NathanControllerConstants.turnAxis)),
                         driveSub);
 
         SendableChooser<Command> chooser = new SendableChooser<>();
@@ -173,11 +173,9 @@ public class RobotContainer {
                 JoystickButton cascadeDown = new JoystickButton(nathan, NathanControllerConstants.cascadeDownButton);
                 cascadeDown.whileTrue(cascadeDownCommand);
 
-                /*
-                 * JoystickButton chargeBalance = new JoystickButton(nathan,
-                 * NathanControllerConstants.gyroBalanceButton);
-                 * chargeBalance.whileTrue(chargeBalanceCommand);
-                 */
+                JoystickButton chargeBalance = new JoystickButton(nathan,
+                                NathanControllerConstants.gyroBalanceButton);
+                chargeBalance.whileTrue(chargeBalanceCommand);
 
                 ///////////////// Nathan Controls ///////////////////////
 
@@ -324,27 +322,69 @@ public class RobotContainer {
 
                 // return ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0));
 
-                //return loadPathPlannerTrajectoryToRamseteCommand(andresPath, true);
+                // return loadPathPlannerTrajectoryToRamseteCommand(andresPath, true);
                 // return loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true);
 
-                
-                 ParallelCommandGroup FirstStageAuton = new ParallelCommandGroup(
-                 new driveAutonPIDCommand(3, driveSub).withTimeout(4.4),
-                 new armsPIDCommand(120, armsSub).withTimeout(2.5).beforeStarting(new
-                 WaitCommand(.2)).
-                 andThen(new clawCommand(clawSub, .4).withTimeout(.3)));
-                 
-                 SequentialCommandGroup auton1 = new SequentialCommandGroup(FirstStageAuton,
-                 new driveAutonPIDCommand(-2, driveSub).withTimeout(3));
-                
-                 
-                 
-                 SequentialCommandGroup auto = new SequentialCommandGroup(
-                 new driveAutonPIDCommand(3, driveSub).withTimeout(4),
-                 new armsPIDCommand(110, armsSub).withTimeout(3),
-                 new WaitCommand(2),
-                 new clawCommand(clawSub, .3).withTimeout(.4));
-                 
-                 return auton1;
-                       }
+                ParallelCommandGroup FirstStageAuton = new ParallelCommandGroup(
+                                new driveAutonPIDCommand(3, driveSub).withTimeout(4.4),
+                                new armsPIDCommand(120, armsSub).withTimeout(2.5).beforeStarting(new WaitCommand(.2))
+                                                .andThen(new clawCommand(.4, clawSub).withTimeout(.3)));
+
+                SequentialCommandGroup auton1 = new SequentialCommandGroup(FirstStageAuton,
+                                new driveAutonPIDCommand(-2, driveSub).withTimeout(3));
+
+                SequentialCommandGroup driveInitial = new SequentialCommandGroup(
+                                new driveAutonPIDCommand(.85, driveSub).withTimeout(4));
+
+                SequentialCommandGroup armRaise = new SequentialCommandGroup(
+                                new armsPIDCommand(150, armsSub).withTimeout(2));
+
+                SequentialCommandGroup cascadeRaise = new SequentialCommandGroup(
+                                new cascadePIDCommand(1.15, cascadeSub).withTimeout(1.75));
+
+                SequentialCommandGroup clawOpen = new SequentialCommandGroup(
+                                new clawCommand(.3, clawSub).withTimeout(.4));
+
+                SequentialCommandGroup driveBackSlow = new SequentialCommandGroup(
+                                new driveAutonPIDCommand(-.7, driveSub));
+
+                SequentialCommandGroup driveBack = new SequentialCommandGroup(
+                                new driveAutonPIDCommand(-.6, driveSub));
+
+                SequentialCommandGroup armLower = new SequentialCommandGroup(
+                                new armsPIDCommand(120, armsSub));
+
+                SequentialCommandGroup cascadeLower = new SequentialCommandGroup(
+                                new cascadePIDCommand(0, cascadeSub));
+
+                ParallelCommandGroup davinciTest = new ParallelCommandGroup(
+                                driveInitial.beforeStarting(new WaitCommand(2.5)),
+                                armRaise,
+                                cascadeRaise.beforeStarting(new WaitCommand(2.75)),
+                                clawOpen.beforeStarting(new WaitCommand(3.5)));
+
+                SequentialCommandGroup firstMovementAuton = new SequentialCommandGroup(
+                                davinciTest,
+                                driveBackSlow.withTimeout(2.25),
+                                cascadeLower.withTimeout(2),
+                                armLower.withTimeout(2.5),
+                                driveBack);
+
+                SequentialCommandGroup auto = new SequentialCommandGroup(
+
+                                // new armsPIDCommand(150, armsSub).withTimeout(3),
+
+                                new driveAutonPIDCommand(.85, driveSub).withTimeout(10),
+
+                                new cascadePIDCommand(1.25, cascadeSub).withTimeout(1),
+
+                                new WaitCommand(2),
+
+                                new clawCommand(.3, clawSub).withTimeout(.4));
+
+                new driveAutonPIDCommand(-1, driveSub).beforeStarting(new WaitCommand(2));
+
+                return firstMovementAuton;
+
+        }
 }

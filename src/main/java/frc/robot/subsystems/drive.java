@@ -57,13 +57,11 @@ public class drive extends SubsystemBase {
   public drive() {
     returnResult();
     resetEncoders();
-
+  
     // PortForwarder.add(5800, "photonvision.local", 5800);
     setBreakMode();
     followSides();
     // gyro.reset();
-
-    
 
     gyro.calibrate();
     gyro.reset();
@@ -102,7 +100,7 @@ public class drive extends SubsystemBase {
   }
 
   public void arcadeMove(double fowardSpeed, double turnSpeed) {
-    leftSide.setInverted(true);
+    rightSide.setInverted(true);
     drive.arcadeDrive(fowardSpeed, turnSpeed);
   }
 

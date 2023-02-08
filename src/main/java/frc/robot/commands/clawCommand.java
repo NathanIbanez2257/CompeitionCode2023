@@ -11,7 +11,7 @@ public class clawCommand extends CommandBase {
   claw clawSub;
   double speed;
 
-  public clawCommand(claw claw, double clawSpeed) {
+  public clawCommand(double clawSpeed, claw claw) {
     clawSub = claw;
     speed = clawSpeed;
     addRequirements(clawSub);

@@ -45,7 +45,6 @@ import frc.robot.commands.chargeCommand;
 import frc.robot.commands.clawCommand;
 import frc.robot.commands.clawPIDCommand;
 import frc.robot.commands.driveAutonPIDCommand;
-import frc.robot.commands.limelightTrackingCommand;
 import frc.robot.commands.meterDriveCommand;
 import frc.robot.subsystems.arms;
 import frc.robot.subsystems.cascade;
@@ -67,9 +66,6 @@ public class RobotContainer {
 
         // 143
 
-        // private static final limelightTrackingCommand limeTrackCommand = new
-        // limelightTrackingCommand(driveSub);
-
         private static final cascadeCommand cascadeUpCommand = new cascadeCommand(cascadeSub,
                         SpeedConstants.cascadeSpeed);
         private static final cascadeCommand cascadeDownCommand = new cascadeCommand(cascadeSub,
@@ -78,7 +74,7 @@ public class RobotContainer {
         private static final cascadePIDCommand cascadePIDMid = new cascadePIDCommand(1.3, cascadeSub);
         private static final cascadePIDCommand cascadePIDZero = new cascadePIDCommand(0, cascadeSub);
 
-        private static final aimRobotCommand limeTestCommand = new aimRobotCommand(driveSub, 15);
+        private static final aimRobotCommand limelightAimCommand = new aimRobotCommand(driveSub, 15);
 
         private static final clawCommand clawOpenCommand = new clawCommand(SpeedConstants.clawSpeed, clawSub);
         private static final clawCommand clawCloseCommand = new clawCommand(-SpeedConstants.clawSpeed, clawSub);
@@ -187,7 +183,8 @@ public class RobotContainer {
                 cascadePIDZero.onTrue(RobotContainer.cascadePIDZero);
 
                 JoystickButton limeTrack = new JoystickButton(nathan, NathanControllerConstants.limeTrackButton);
-                limeTrack.whileTrue(limeTestCommand);
+                limeTrack.whileTrue(limelightAimCommand);
+
 
                 configureBindings();
 

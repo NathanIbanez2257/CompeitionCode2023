@@ -42,20 +42,15 @@ public class drive extends SubsystemBase {
 
   DifferentialDrive drive = new DifferentialDrive(leftSide, rightSide);
 
-  PhotonCamera camera = new PhotonCamera("limelight");
-
   public static final Gyro gyro = new WPI_Pigeon2(DriveConstants.gyroID);
 
   public static final WPI_Pigeon2 pigeon = new WPI_Pigeon2(DriveConstants.gyroID);
-
-  PhotonPipelineResult result = camera.getLatestResult();
 
   private final DifferentialDriveOdometry m_Odometry;
 
   double x, y, a, distanceToTarget;
 
   public drive() {
-    returnResult();
     resetEncoders();
   
     // PortForwarder.add(5800, "photonvision.local", 5800);
@@ -76,22 +71,6 @@ public class drive extends SubsystemBase {
 
   public double getAngle() {
     return -gyro.getAngle();
-  }
-
-  public PhotonPipelineResult returnResult() {
-    return result;
-  }
-
-  public boolean hasTargets() {
-    return result.hasTargets();
-  }
-
-  public double getLimelightYaw() {
-    return result.getBestTarget().getYaw();
-  }
-
-  public double getLimelightPitch() {
-    return result.getBestTarget().getPitch();
   }
 
   public void move(double leftSpeed, double rightSpeed) {
@@ -298,10 +277,6 @@ public class drive extends SubsystemBase {
   @Override
   public void periodic() {
 
-    camera.getLatestResult();
-    result.getTargets();
-    result.hasTargets();
-
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");
@@ -321,7 +296,6 @@ public class drive extends SubsystemBase {
     distanceToTarget = limeHeightToTarget / (Math.tan(theta));
 
     SmartDashboard.putNumber("Pitch", getVertical());
-    SmartDashboard.putBoolean("Lime Works", result.hasTargets());
 
     m_Odometry.update(gyro.getRotation2d(), leftNativeDistanceInMetersOdometry(),
         rightNativeDistanceInMetersOdometry());

@@ -61,6 +61,6 @@ public class cascade extends SubsystemBase {
     // cascadeTop();
 
     SmartDashboard.putNumber("Cascade Position", cascadeTick2Feet());
-    SmartDashboard.putNumber("Cascade Encoder Position", cascade.getSelectedSensorPosition());
+   // SmartDashboard.putNumber("Cascade Encoder Position", cascade.getSelectedSensorPosition());
   }
 }

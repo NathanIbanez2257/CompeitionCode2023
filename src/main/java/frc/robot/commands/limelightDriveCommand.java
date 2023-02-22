@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.LimelightOriginalConstants;
 import frc.robot.subsystems.drive;
 
-public class aimRobotCommand extends CommandBase {
+public class limelightDriveCommand extends CommandBase {
 
   drive drive;
 
@@ -53,7 +53,7 @@ public class aimRobotCommand extends CommandBase {
    * 
    */
 
-  public aimRobotCommand(drive driveSub, double targetDistance) {
+  public limelightDriveCommand(drive driveSub, double targetDistance) {
     drive = driveSub;
     td = targetDistance;
     addRequirements(driveSub);
@@ -81,24 +81,59 @@ public class aimRobotCommand extends CommandBase {
      */
 
     // run PID with no D, between error of 20 degrees +-
+    if (drive.angleOff() < 20) {
 
-  
+      errorAim = 0 + (-1 * drive.angleOff()); // target angle offset, angle Off = error angle
+      proportionAim = errorAim * .01; // proportion
 
-    if (Math.abs(drive.angleOff()) < 15) {
+      errorDistance = td - drive.currentDistance();
 
-      errorAim = LimelightOriginalConstants.targetAngle + (-1 * drive.angleOff()); // target angle offset, angle Off =
-                                                                                   // error angle
-      proportionAim = errorAim * LimelightOriginalConstants.shortAimKP; // proportion
+      proportionDistance = errorDistance * LimelightOriginalConstants.distanceKP;
 
       double dt = Timer.getFPGATimestamp() - pastTime;
       pastTime = Timer.getFPGATimestamp();
 
       integralAim += (errorAim * dt) * LimelightOriginalConstants.shortAimKI;
 
+      integralDistance += (errorDistance * dt) * LimelightOriginalConstants.distanceKI;
+
       double dxAim = errorAim - oldErrorAim;
-      
+      double dxDistance = errorDistance - oldErrorDistance;
+
       derivativeAim = (dxAim / dt) * LimelightOriginalConstants.aimKD;
+      derivativeDistance = (dxDistance / dt) * LimelightOriginalConstants.distanceKD;
+
       oldErrorAim = errorAim;
+      oldErrorDistance = errorDistance;
+
+      speedAim = proportionAim + integralAim;
+
+      drive.move(speedAim, speedAim * -1); // + speedDistance, -1* speedAim + speedDistance (.34, .89)
+
+    }
+
+    else if (drive.angleOff() > -20) {
+
+      errorAim = LimelightOriginalConstants.targetAngle + (-1 * drive.angleOff()); // target angle offset, angle Off =
+                                                                                   // error angle
+      proportionAim = errorAim * LimelightOriginalConstants.shortAimKP; // proportion
+
+      errorDistance = td - drive.currentDistance();
+
+      proportionDistance = errorDistance * LimelightOriginalConstants.distanceKP;
+
+      double dt = Timer.getFPGATimestamp() - pastTime;
+      pastTime = Timer.getFPGATimestamp();
+
+      integralAim += (errorAim * dt) * LimelightOriginalConstants.shortAimKI;
+      integralDistance += (errorDistance * dt) * LimelightOriginalConstants.distanceKI;
+
+      double dxAim = errorAim - oldErrorAim;
+      double dxDistance = errorDistance - oldErrorDistance;
+      derivativeAim = (dxAim / dt) * LimelightOriginalConstants.aimKD;
+      derivativeDistance = (dxDistance / dt) * LimelightOriginalConstants.distanceKD;
+      oldErrorAim = errorAim;
+      oldErrorDistance = errorDistance;
 
       speedAim = proportionAim + integralAim;
 
@@ -110,6 +145,32 @@ public class aimRobotCommand extends CommandBase {
 
     else {
       drive.move(0, 0);
+      errorAim = LimelightOriginalConstants.targetAngle + (-1 * drive.angleOff());
+      proportionAim = errorAim * LimelightOriginalConstants.longAimKP;
+
+      errorDistance = td - drive.currentDistance();
+      proportionDistance = errorDistance * LimelightOriginalConstants.distanceKP;
+
+      double dt = Timer.getFPGATimestamp() - pastTime;
+      pastTime = Timer.getFPGATimestamp();
+
+      integralAim += (errorAim * dt) * LimelightOriginalConstants.longAimKI;
+      integralDistance += (errorDistance * dt) * LimelightOriginalConstants.distanceKI;
+
+      double dxAim = errorAim - oldErrorAim;
+      double dxDistance = errorDistance - oldErrorDistance;
+
+      derivativeAim = Math.abs((dxAim / dt) * LimelightOriginalConstants.aimKD);
+      derivativeDistance = (dxDistance / dt) * LimelightOriginalConstants.distanceKD;
+      oldErrorAim = errorAim;
+      oldErrorDistance = errorDistance;
+
+      speedAim = proportionAim + integralAim - derivativeAim;
+
+      // speedDistance = proportionDistance + integralDistance + derivativeDistance;
+
+      drive.move(speedAim, speedAim * -1); // + speedDistance, -1* speedAim + speedDistance
+
     }
 
     // smart dashboard

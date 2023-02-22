@@ -286,14 +286,24 @@ public class drive extends SubsystemBase {
     y = ty.getDouble(0.0);
     a = ta.getDouble(0.0);
 
-    SmartDashboard.putNumber("LimelightX", x);
-    SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightArea", a);
+    SmartDashboard.putNumber("Limelight X", x);
+    SmartDashboard.putNumber("Limelight Y", y);
+    SmartDashboard.putNumber("Limelight Area", a);
 
-    double limeHeightToTarget = 34 - 29;
+    double limelightMountDegrees = 30,
+           limelightHeightInches = 19,
+           goalHeightInches = 44;
 
-    double theta = Math.toRadians(90 + y);
-    distanceToTarget = limeHeightToTarget / (Math.tan(theta));
+    double angleToGoal = limelightMountDegrees + y,
+           angletoGoalRadians = Units.degreesToRadians(angleToGoal); 
+    
+    double distanceFromLimelightToGoalInches = (goalHeightInches - limelightHeightInches) / Math.tan(angletoGoalRadians);
+
+    SmartDashboard.putNumber("Limelight Distance From Target", distanceFromLimelightToGoalInches);
+
+
+
+
 
     SmartDashboard.putNumber("Pitch", getVertical());
 

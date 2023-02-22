@@ -17,10 +17,9 @@ public class chargeCommand extends CommandBase {
 
       errorGyro, oldErrorGyro, speedGyro, pastTime, levelGyro;
 
-  public chargeCommand(drive drive, double levelAngle) {
+  public chargeCommand(drive drive) {
 
     driveSub = drive;
-    levelAngle = levelGyro;
     addRequirements(driveSub);
   }
 
@@ -34,7 +33,7 @@ public class chargeCommand extends CommandBase {
   public void execute() {
     if (Math.abs(driveSub.getVertical()) > 1) {
 
-      if (Math.abs(driveSub.getVertical()) < 6) {
+      if (Math.abs(driveSub.getVertical()) < 5) {
         errorGyro = GyroConstants.gyroAngle + (driveSub.getVertical());
 
         pGyro = errorGyro * GyroConstants.shortGyroKP;
@@ -51,7 +50,7 @@ public class chargeCommand extends CommandBase {
         driveSub.move(speedGyro, speedGyro);
       }
 
-      else {
+      else if (Math.abs(driveSub.getVertical()) > 5) {
         errorGyro = GyroConstants.gyroAngle + (driveSub.getVertical());
 
         pGyro = errorGyro * GyroConstants.longGyroKP;
@@ -62,6 +61,7 @@ public class chargeCommand extends CommandBase {
         iGyro += (errorGyro * dt) * GyroConstants.longGyroKI;
 
         double dxDistance = errorGyro - oldErrorGyro;
+
         dGyro = (dxDistance / dt) * GyroConstants.longGyroKD;
 
         speedGyro = pGyro + iGyro - dGyro;
@@ -71,14 +71,15 @@ public class chargeCommand extends CommandBase {
 
         driveSub.move(speedGyro, speedGyro); // + speedDistance, -1* speedAim + speedDistance
       }
-    }
 
-    else {
-      driveSub.move(0, 0);
-    }
+      else 
+      {
+        driveSub.move(0, 0);
+      }
+    
+  }
 
     SmartDashboard.putNumber("Aim Error", errorGyro);
-    SmartDashboard.putNumber("Aim Speed", errorGyro);
 
   }
 

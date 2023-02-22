@@ -71,7 +71,7 @@ public class RobotContainer {
         private static final cascadeCommand cascadeDownCommand = new cascadeCommand(cascadeSub,
                         -SpeedConstants.cascadeSpeed);
 
-        private static final cascadePIDCommand cascadePIDMid = new cascadePIDCommand(1.3, cascadeSub);
+        private static final cascadePIDCommand cascadePIDMid = new cascadePIDCommand(1.32, cascadeSub);
         private static final cascadePIDCommand cascadePIDZero = new cascadePIDCommand(0, cascadeSub);
 
         private static final aimRobotCommand limelightAimCommand = new aimRobotCommand(driveSub, 15);
@@ -81,7 +81,7 @@ public class RobotContainer {
 
         private static final clawPIDCommand clawOpenPIDCommand = new clawPIDCommand(80, clawSub);
 
-        private static final chargeCommand chargeBalanceCommand = new chargeCommand(driveSub, GyroConstants.gyroAngle);
+        private static final chargeCommand chargeBalanceCommand = new chargeCommand(driveSub);
 
         private static final Joystick nathan = new Joystick(NathanControllerConstants.nathan);
         private static final Joystick gio = new Joystick(GioControllerConstants.gio);
@@ -184,7 +184,6 @@ public class RobotContainer {
 
                 JoystickButton limeTrack = new JoystickButton(nathan, NathanControllerConstants.limeTrackButton);
                 limeTrack.whileTrue(limelightAimCommand);
-
 
                 configureBindings();
 
@@ -331,10 +330,10 @@ public class RobotContainer {
                                 new driveAutonPIDCommand(-2, driveSub).withTimeout(3));
 
                 SequentialCommandGroup driveInitial = new SequentialCommandGroup(
-                                new driveAutonPIDCommand(.85, driveSub).withTimeout(4));
+                                new driveAutonPIDCommand(.85, driveSub).withTimeout(2.25));
 
                 SequentialCommandGroup armRaise = new SequentialCommandGroup(
-                                new armsPIDCommand(150, armsSub).withTimeout(2));
+                                new armsPIDCommand(125, armsSub).withTimeout(1.75));
 
                 SequentialCommandGroup cascadeRaise = new SequentialCommandGroup(
                                 new cascadePIDCommand(1.15, cascadeSub).withTimeout(1.75));
@@ -342,30 +341,54 @@ public class RobotContainer {
                 SequentialCommandGroup clawOpen = new SequentialCommandGroup(
                                 new clawCommand(.3, clawSub).withTimeout(.4));
 
+                SequentialCommandGroup clawClose = new SequentialCommandGroup(
+                                new clawCommand(-.3, clawSub).withTimeout(.4));
+
                 SequentialCommandGroup driveBackSlow = new SequentialCommandGroup(
-                                new driveAutonPIDCommand(-.7, driveSub));
+                                new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25));
 
                 SequentialCommandGroup driveBack = new SequentialCommandGroup(
-                                new driveAutonPIDCommand(-.6, driveSub));
+                                new driveAutonPIDCommand(-.7, driveSub).withTimeout(1.5));
 
-                SequentialCommandGroup armLower = new SequentialCommandGroup(
-                                new armsPIDCommand(120, armsSub));
+                ParallelCommandGroup driveBack2ndStage = new ParallelCommandGroup(
+                                new driveAutonPIDCommand(-.7, driveSub).withTimeout(2));
+                // new armsPIDCommand(66, armsSub).withTimeout(.75)
+
+                ParallelCommandGroup driveBack3ndStage = new ParallelCommandGroup(
+                                new driveAutonPIDCommand(-.55, driveSub).withTimeout(1.5));
+
+                SequentialCommandGroup armPostRaise = new SequentialCommandGroup(
+                                new armsPIDCommand(140, armsSub).withTimeout(1.25));
+
+                SequentialCommandGroup armPostLower = new SequentialCommandGroup(
+                                new armsPIDCommand(-25, armsSub).withTimeout(1.25));
 
                 SequentialCommandGroup cascadeLower = new SequentialCommandGroup(
-                                new cascadePIDCommand(0, cascadeSub));
+                                new cascadePIDCommand(0, cascadeSub).withTimeout(1.25));
+
+                ParallelCommandGroup ArmCascadeClawDown = new ParallelCommandGroup(cascadeLower,
+                                armPostLower.beforeStarting(new WaitCommand(.25)), 
+                                 clawClose);
+
+                // 66
 
                 ParallelCommandGroup davinciTest = new ParallelCommandGroup(
                                 driveInitial.beforeStarting(new WaitCommand(2.5)),
                                 armRaise,
-                                cascadeRaise.beforeStarting(new WaitCommand(2.75)),
+                                cascadeRaise.beforeStarting(new WaitCommand(2.25)),
                                 clawOpen.beforeStarting(new WaitCommand(3.5)));
 
                 SequentialCommandGroup firstMovementAuton = new SequentialCommandGroup(
-                                davinciTest,
-                                driveBackSlow.withTimeout(2.25),
-                                cascadeLower.withTimeout(2),
-                                armLower.withTimeout(2.5),
-                                driveBack);
+                                davinciTest.andThen(() -> System.out.println("Initial Auton Done")),
+                                driveBackSlow,
+                                ArmCascadeClawDown,
+                                driveBack,
+
+                                driveBack2ndStage,
+                                driveBack3ndStage,
+
+                                chargeBalanceCommand.withTimeout(2)
+                                                .andThen(() -> System.out.println("Charge Command Has Finished")));
 
                 SequentialCommandGroup auto = new SequentialCommandGroup(
 
@@ -381,6 +404,7 @@ public class RobotContainer {
 
                 new driveAutonPIDCommand(-1, driveSub).beforeStarting(new WaitCommand(2));
 
+                // return firstMovementAuton;
                 return firstMovementAuton;
 
         }

@@ -7,7 +7,7 @@ public final class Constants {
 
   public static final class LimelightOriginalConstants {
 
-    public static final double shortAimKP = 0.01, shortAimKI = .025,
+    public static final double shortAimKP = 0.045, shortAimKI = .0005,
 
         longAimKP = .007, longAimKI = 0.01,
 
@@ -93,7 +93,7 @@ public final class Constants {
   public static final class AutonConstatns {
     public static final double
 
-    KP = .72, KI = 0.5, KD = 0.002;
+    KP = .68, KI = 0.5, KD = 0.002;
 
     // kp .37 kd .17
 
@@ -179,9 +179,9 @@ public final class Constants {
 
     gyroAngle = 0,
 
-        shortGyroKP = .015, shortGyroKI = .005, shortGyroKD = .00,
+        shortGyroKP = .008, shortGyroKI = .006, shortGyroKD = .00,
 
-        longGyroKP = .005, longGyroKI = .005, longGyroKD = .00;
+        longGyroKP = .025, longGyroKI = .0008, longGyroKD = .005;
   }
 
   public static final class SpeedConstants {

@@ -23,7 +23,9 @@ public class arms extends SubsystemBase {
   /** Creates a new arms. */
   public arms() {
 
-
+    leftArm.setSelectedSensorPosition(-41368);
+    rightArm.setSelectedSensorPosition(-41368);
+    //41368
     breakMode();
     leftArm.configForwardSoftLimitEnable(false);
 

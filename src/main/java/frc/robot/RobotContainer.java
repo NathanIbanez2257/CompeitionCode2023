@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -45,7 +46,6 @@ import frc.robot.commands.chargeCommand;
 import frc.robot.commands.clawCommand;
 import frc.robot.commands.clawPIDCommand;
 import frc.robot.commands.driveAutonPIDCommand;
-import frc.robot.commands.meterDriveCommand;
 import frc.robot.subsystems.arms;
 import frc.robot.subsystems.cascade;
 import frc.robot.subsystems.claw;
@@ -84,14 +84,16 @@ public class RobotContainer {
         private static final chargeCommand chargeBalanceCommand = new chargeCommand(driveSub);
 
         private static final Joystick nathan = new Joystick(NathanControllerConstants.nathan);
-        private static final Joystick gio = new Joystick(GioControllerConstants.gio);
+        private static final Joystick sebas = new Joystick(GioControllerConstants.sebas);
 
-        String straightPath = "straight.wpilib.json";
-        String path1 = "NEWPATH.wpilib.json";
-        String AutonPath1 = "AutonPath1.wpilib.json";
-        String AutonPath2 = "AutonPath2.wpilib.json";
-        String OfficialTestingPath = "OfficialTestingAuton.wpilib.json";
-        String andresPath = "testwitandres.wpilib.json";
+        /*
+         * String straightPath = "straight.wpilib.json";
+         * String path1 = "NEWPATH.wpilib.json";
+         * String AutonPath1 = "AutonPath1.wpilib.json";
+         * String AutonPath2 = "AutonPath2.wpilib.json";
+         * String OfficialTestingPath = "OfficialTestingAuton.wpilib.json";
+         * String andresPath = "testwitandres.wpilib.json";
+         */
 
         RunCommand nathanMove = new RunCommand(
                         () -> driveSub.arcadeMove(
@@ -112,53 +114,58 @@ public class RobotContainer {
 
                 driveSub.setDefaultCommand(nathanMove);
 
-                chooser.addOption("Andres Testing",
-                                loadPathPlannerTrajectoryToRamseteCommand(
-                                                andresPath, true));
+                chooser.addOption("Middle Auto", MiddleAuto);
+                chooser.addOption("Red Side Auto", null);
 
-                chooser.addOption("Official Testing",
-                                loadPathPlannerTrajectoryToRamseteCommand(
-                                                OfficialTestingPath, false));
+                SmartDashboard.putData(chooser);
 
-                chooser.addOption("straightPath",
-                                loadPathPlannerTrajectoryToRamseteCommand(
-                                                straightPath, true));
-
-                chooser.addOption("AutonPath1",
-                                loadPathPlannerTrajectoryToRamseteCommand(
-                                                AutonPath1, true));
-
-                chooser.addOption("AutonPath2",
-                                loadPathPlannerTrajectoryToRamseteCommand(
-                                                AutonPath2, true));
-
-                chooser.addOption("Path1",
-                                loadPathPlannerTrajectoryToRamseteCommand(
-                                                path1, true));
-
-                Shuffleboard.getTab("Autonomous").add(chooser);
+                /*
+                 * chooser.addOption("Andres Testing",
+                 * loadPathPlannerTrajectoryToRamseteCommand(
+                 * andresPath, true));
+                 * 
+                 * chooser.addOption("Official Testing",
+                 * loadPathPlannerTrajectoryToRamseteCommand(
+                 * OfficialTestingPath, false));
+                 * 
+                 * chooser.addOption("straightPath",
+                 * loadPathPlannerTrajectoryToRamseteCommand(
+                 * straightPath, true));
+                 * 
+                 * chooser.addOption("AutonPath1",
+                 * loadPathPlannerTrajectoryToRamseteCommand(
+                 * AutonPath1, true));
+                 * 
+                 * chooser.addOption("AutonPath2",
+                 * loadPathPlannerTrajectoryToRamseteCommand(
+                 * AutonPath2, true));
+                 * 
+                 * chooser.addOption("Path1",
+                 * loadPathPlannerTrajectoryToRamseteCommand(
+                 * path1, true));
+                 */
 
                 ///////////////// Gio Controls ///////////////////////
 
-                JoystickButton armUp = new JoystickButton(gio, GioControllerConstants.armUpButton);
+                JoystickButton armUp = new JoystickButton(sebas, GioControllerConstants.armUpButton);
                 armUp.whileTrue(armUpCommand);
 
-                JoystickButton armDown = new JoystickButton(gio, GioControllerConstants.armDownButton);
+                JoystickButton armDown = new JoystickButton(sebas, GioControllerConstants.armDownButton);
                 armDown.whileTrue(armDownCommand);
 
-                JoystickButton clawOpen = new JoystickButton(gio, GioControllerConstants.clawOpenButton);
+                JoystickButton clawOpen = new JoystickButton(sebas, GioControllerConstants.clawOpenButton);
                 clawOpen.whileTrue(clawOpenCommand);
 
-                JoystickButton clawClose = new JoystickButton(gio, GioControllerConstants.clawCloseButton);
+                JoystickButton clawClose = new JoystickButton(sebas, GioControllerConstants.clawCloseButton);
                 clawClose.whileTrue(clawCloseCommand);
 
-                JoystickButton armsHigh = new JoystickButton(gio, 4);
+                JoystickButton armsHigh = new JoystickButton(sebas, 4);
                 armsHigh.onTrue(armsHighCommand);
 
-                JoystickButton armsZero = new JoystickButton(gio, 2);
+                JoystickButton armsZero = new JoystickButton(sebas, 2);
                 armsZero.onTrue(armsZeroCommand);
 
-                JoystickButton clawOpenPID = new JoystickButton(gio, 1);
+                JoystickButton clawOpenPID = new JoystickButton(sebas, 1);
                 clawOpenPID.onTrue(clawOpenPIDCommand);
 
                 ///////////////// Nathan Controls ///////////////////////
@@ -189,63 +196,135 @@ public class RobotContainer {
 
         }
 
-        ParallelCommandGroup AutonomousPractice = new ParallelCommandGroup(
-                        loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true));
+        //////////////// Autonomous Commands ////////////
 
-        public Command loadPathPlannerTrajectoryToRamseteCommand(String filename, boolean resetOdometry) {
-                Trajectory trajectory;
+        SequentialCommandGroup driveInitial = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(.85, driveSub).withTimeout(2.25));
 
-                try {
-                        Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filename);
-                        trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-                        System.out.println("winning");
+        SequentialCommandGroup armRaise = new SequentialCommandGroup(
+                        new armsPIDCommand(125, armsSub).withTimeout(1.75));
 
-                }
+        SequentialCommandGroup cascadeRaise = new SequentialCommandGroup(
+                        new cascadePIDCommand(1.15, cascadeSub).withTimeout(1.75));
 
-                catch (Exception exception) {
-                        DriverStation.reportError("Unable To Open Trajectory " + filename, exception.getStackTrace());
-                        System.out.println("Unable to read from file" + filename);
-                        return new InstantCommand();
-                }
+        SequentialCommandGroup clawOpenAuto = new SequentialCommandGroup(
+                        new clawCommand(.3, clawSub).withTimeout(.4));
 
-                RamseteCommand ramseteCommand = new RamseteCommand(
+        SequentialCommandGroup clawCloseAuto = new SequentialCommandGroup(
+                        new clawCommand(-.3, clawSub).withTimeout(.4));
 
-                                trajectory, driveSub::getPose,
-                                new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
-                                new SimpleMotorFeedforward(KineConstants.ksVolts, KineConstants.kvVoltSecondsPerMeter,
-                                                KineConstants.kaVoltSecondSquaredPerMeter),
-                                KineConstants.kDrive,
-                                driveSub::getWheelSpeedsOdometry,
-                                new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-                                new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-                                driveSub::tankDriveVoltsOdometry,
-                                driveSub);
+        SequentialCommandGroup driveBackSlow = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25));
 
-                if (resetOdometry) {
-                        return new SequentialCommandGroup(
-                                        new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())
+        SequentialCommandGroup driveBack = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(-.7, driveSub).withTimeout(1.5));
 
-                                        ),
+        ParallelCommandGroup driveBack2ndStage = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-.7, driveSub).withTimeout(2));
+        // new armsPIDCommand(66, armsSub).withTimeout(.75)
 
-                                        new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())
+        ParallelCommandGroup driveBack3ndStage = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-.55, driveSub).withTimeout(1.5));
 
-                                        ), new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())
+        SequentialCommandGroup armPostRaise = new SequentialCommandGroup(
+                        new armsPIDCommand(140, armsSub).withTimeout(1.25));
 
-                                        ).handleInterrupt(() -> System.out.println("\ngot interrupted\n")),
+        SequentialCommandGroup armPostLower = new SequentialCommandGroup(
+                        new armsPIDCommand(-25, armsSub).withTimeout(1.25));
 
-                                        ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0)));
-                }
-                // added new wait commmand 1 second
-                // needs to be tested
+        SequentialCommandGroup cascadeLower = new SequentialCommandGroup(
+                        new cascadePIDCommand(0, cascadeSub).withTimeout(1.25));
 
-                else {
-                        return ramseteCommand;
-                }
+        ParallelCommandGroup ArmCascadeClawDown = new ParallelCommandGroup(
+                        cascadeLower,
+                        armPostLower.beforeStarting(new WaitCommand(.25)),
+                        clawCloseAuto);
 
-                // driveSub.resetOdometry(trajectory.getInitialPose());
-                // return ramseteCommand.andThen(()-> driveSub.tankDriveVolts(0, 0));
+        // 66
 
-        }
+        ParallelCommandGroup davinciTest = new ParallelCommandGroup(
+                        driveInitial.beforeStarting(new WaitCommand(2.5)),
+                        armRaise,
+                        cascadeRaise.beforeStarting(new WaitCommand(2.25)),
+                        clawOpenAuto.beforeStarting(new WaitCommand(3.5)));
+
+        SequentialCommandGroup MiddleAuto = new SequentialCommandGroup(
+                        davinciTest.andThen(() -> System.out.println("Initial Auton Done")),
+                        driveBackSlow,
+                        ArmCascadeClawDown,
+                        driveBack,
+
+                        driveBack2ndStage,
+                        driveBack3ndStage,
+
+                        chargeBalanceCommand.withTimeout(2)
+                                        .andThen(() -> System.out.println("Charge Command Has Finished")));
+
+        /*
+         * ParallelCommandGroup AutonomousPractice = new ParallelCommandGroup(
+         * loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true));
+         * 
+         * public Command loadPathPlannerTrajectoryToRamseteCommand(String filename,
+         * boolean resetOdometry) {
+         * Trajectory trajectory;
+         * 
+         * try {
+         * Path trajectoryPath =
+         * Filesystem.getDeployDirectory().toPath().resolve(filename);
+         * trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+         * System.out.println("winning");
+         * 
+         * }
+         * 
+         * catch (Exception exception) {
+         * DriverStation.reportError("Unable To Open Trajectory " + filename,
+         * exception.getStackTrace());
+         * System.out.println("Unable to read from file" + filename);
+         * return new InstantCommand();
+         * }
+         * 
+         * RamseteCommand ramseteCommand = new RamseteCommand(
+         * 
+         * trajectory, driveSub::getPose,
+         * new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
+         * new SimpleMotorFeedforward(KineConstants.ksVolts,
+         * KineConstants.kvVoltSecondsPerMeter,
+         * KineConstants.kaVoltSecondSquaredPerMeter),
+         * KineConstants.kDrive,
+         * driveSub::getWheelSpeedsOdometry,
+         * new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+         * new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+         * driveSub::tankDriveVoltsOdometry,
+         * driveSub);
+         * 
+         * if (resetOdometry) {
+         * return new SequentialCommandGroup(
+         * new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())
+         * 
+         * ),
+         * 
+         * new InstantCommand(() -> driveSub.resetOdometry(trajectory.getInitialPose())
+         * 
+         * ), new InstantCommand(() ->
+         * driveSub.resetOdometry(trajectory.getInitialPose())
+         * 
+         * ).handleInterrupt(() -> System.out.println("\ngot interrupted\n")),
+         * 
+         * ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0)));
+         * }
+         * // added new wait commmand 1 second
+         * // needs to be tested
+         * 
+         * else {
+         * return ramseteCommand;
+         * }
+         * 
+         * 
+         * // driveSub.resetOdometry(trajectory.getInitialPose());
+         * // return ramseteCommand.andThen(()-> driveSub.tankDriveVolts(0, 0));
+         * 
+         * }
+         */
 
         /**
          * Use this method to define your trigger->command mappings. Triggers can be
@@ -273,139 +352,151 @@ public class RobotContainer {
          */
         public Command getAutonomousCommand() {
 
-                // // Create a voltage constraint to ensure we don't accelerate too fast
-                // DifferentialDriveVoltageConstraint autoVoltageConstraint = new
-                // DifferentialDriveVoltageConstraint(
-                // new SimpleMotorFeedforward(
-                // KineConstants.ksVolts,
-                // KineConstants.kvVoltSecondsPerMeter,
-                // KineConstants.kaVoltSecondSquaredPerMeter),
-                // KineConstants.kDrive,
-                // 10);
+                /*
+                 * // Create a voltage constraint to ensure we don't accelerate too fast
+                 * DifferentialDriveVoltageConstraint autoVoltageConstraint = new
+                 * DifferentialDriveVoltageConstraint(
+                 * new SimpleMotorFeedforward(
+                 * KineConstants.ksVolts,
+                 * KineConstants.kvVoltSecondsPerMeter,
+                 * KineConstants.kaVoltSecondSquaredPerMeter),
+                 * KineConstants.kDrive,
+                 * 10);
+                 * 
+                 * TrajectoryConfig config = new TrajectoryConfig(
+                 * KineConstants.kMaxSpeedMetersPerSecond,
+                 * KineConstants.kMaxAccelerationMetersPerSecSquared)
+                 * // Add kinematics to ensure max speed is actually obeyed
+                 * .setKinematics(KineConstants.kDrive)
+                 * // Apply the voltage constraint
+                 * .addConstraint(autoVoltageConstraint);
+                 * 
+                 * Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+                 * // Start at the origin facing the +X direction
+                 * new Pose2d(0, 0, new Rotation2d(0)),
+                 * // Pass through these two interior waypoints, making an 's' curve path
+                 * List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+                 * // End 3 meters straight ahead of where we started, facing forward
+                 * new Pose2d(3, 0, new Rotation2d(0)),
+                 * // Pass config
+                 * config);
+                 * 
+                 * RamseteCommand ramseteCommand = new RamseteCommand(exampleTrajectory,
+                 * driveSub::getPose,
+                 * new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
+                 * new SimpleMotorFeedforward(KineConstants.ksVolts,
+                 * KineConstants.kvVoltSecondsPerMeter,
+                 * KineConstants.kaVoltSecondSquaredPerMeter),
+                 * KineConstants.kDrive,
+                 * driveSub::getWheelSpeeds,
+                 * new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+                 * new PIDController(KineConstants.kpDriveVelocity, 0, 0),
+                 * driveSub::tankDriveVolts,
+                 * driveSub);
+                 * 
+                 * driveSub.resetOdometry(exampleTrajectory.getInitialPose());
+                 * 
+                 * return ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0));
+                 * 
+                 * return loadPathPlannerTrajectoryToRamseteCommand(andresPath, true);
+                 * return loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true);
+                 */
 
-                // TrajectoryConfig config = new TrajectoryConfig(
-                // KineConstants.kMaxSpeedMetersPerSecond,
-                // KineConstants.kMaxAccelerationMetersPerSecSquared)
-                // // Add kinematics to ensure max speed is actually obeyed
-                // .setKinematics(KineConstants.kDrive)
-                // // Apply the voltage constraint
-                // .addConstraint(autoVoltageConstraint);
+                // SequentialCommandGroup driveInitial = new SequentialCommandGroup(
+                // new driveAutonPIDCommand(.85, driveSub).withTimeout(2.25));
 
-                // Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-                // // Start at the origin facing the +X direction
-                // new Pose2d(0, 0, new Rotation2d(0)),
-                // // Pass through these two interior waypoints, making an 's' curve path
-                // List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-                // // End 3 meters straight ahead of where we started, facing forward
-                // new Pose2d(3, 0, new Rotation2d(0)),
-                // // Pass config
-                // config);
+                // SequentialCommandGroup armRaise = new SequentialCommandGroup(
+                // new armsPIDCommand(125, armsSub).withTimeout(1.75));
 
-                // RamseteCommand ramseteCommand = new RamseteCommand(exampleTrajectory,
-                // driveSub::getPose,
-                // new RamseteController(KineConstants.kRamseteB, KineConstants.kRamseteZeta),
-                // new SimpleMotorFeedforward(KineConstants.ksVolts,
-                // KineConstants.kvVoltSecondsPerMeter,
-                // KineConstants.kaVoltSecondSquaredPerMeter),
-                // KineConstants.kDrive,
-                // driveSub::getWheelSpeeds,
-                // new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-                // new PIDController(KineConstants.kpDriveVelocity, 0, 0),
-                // driveSub::tankDriveVolts,
-                // driveSub);
+                // SequentialCommandGroup cascadeRaise = new SequentialCommandGroup(
+                // new cascadePIDCommand(1.15, cascadeSub).withTimeout(1.75));
 
-                // driveSub.resetOdometry(exampleTrajectory.getInitialPose());
+                // SequentialCommandGroup clawOpen = new SequentialCommandGroup(
+                // new clawCommand(.3, clawSub).withTimeout(.4));
 
-                // return ramseteCommand.andThen(() -> driveSub.tankDriveVolts(0, 0));
+                // SequentialCommandGroup clawClose = new SequentialCommandGroup(
+                // new clawCommand(-.3, clawSub).withTimeout(.4));
 
-                // return loadPathPlannerTrajectoryToRamseteCommand(andresPath, true);
-                // return loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true);
+                // SequentialCommandGroup driveBackSlow = new SequentialCommandGroup(
+                // new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25));
 
-                ParallelCommandGroup FirstStageAuton = new ParallelCommandGroup(
-                                new driveAutonPIDCommand(3, driveSub).withTimeout(4.4),
-                                new armsPIDCommand(120, armsSub).withTimeout(2.5).beforeStarting(new WaitCommand(.2))
-                                                .andThen(new clawCommand(.4, clawSub).withTimeout(.3)));
+                // SequentialCommandGroup driveBack = new SequentialCommandGroup(
+                // new driveAutonPIDCommand(-.7, driveSub).withTimeout(1.5));
 
-                SequentialCommandGroup auton1 = new SequentialCommandGroup(FirstStageAuton,
-                                new driveAutonPIDCommand(-2, driveSub).withTimeout(3));
+                // ParallelCommandGroup driveBack2ndStage = new ParallelCommandGroup(
+                // new driveAutonPIDCommand(-.7, driveSub).withTimeout(2));
+                // // new armsPIDCommand(66, armsSub).withTimeout(.75)
 
-                SequentialCommandGroup driveInitial = new SequentialCommandGroup(
-                                new driveAutonPIDCommand(.85, driveSub).withTimeout(2.25));
+                // ParallelCommandGroup driveBack3ndStage = new ParallelCommandGroup(
+                // new driveAutonPIDCommand(-.55, driveSub).withTimeout(1.5));
 
-                SequentialCommandGroup armRaise = new SequentialCommandGroup(
-                                new armsPIDCommand(125, armsSub).withTimeout(1.75));
+                // SequentialCommandGroup armPostRaise = new SequentialCommandGroup(
+                // new armsPIDCommand(140, armsSub).withTimeout(1.25));
 
-                SequentialCommandGroup cascadeRaise = new SequentialCommandGroup(
-                                new cascadePIDCommand(1.15, cascadeSub).withTimeout(1.75));
+                // SequentialCommandGroup armPostLower = new SequentialCommandGroup(
+                // new armsPIDCommand(-25, armsSub).withTimeout(1.25));
 
-                SequentialCommandGroup clawOpen = new SequentialCommandGroup(
-                                new clawCommand(.3, clawSub).withTimeout(.4));
+                // SequentialCommandGroup cascadeLower = new SequentialCommandGroup(
+                // new cascadePIDCommand(0, cascadeSub).withTimeout(1.25));
 
-                SequentialCommandGroup clawClose = new SequentialCommandGroup(
-                                new clawCommand(-.3, clawSub).withTimeout(.4));
+                // ParallelCommandGroup ArmCascadeClawDown = new ParallelCommandGroup(
+                // cascadeLower,
+                // armPostLower.beforeStarting(new WaitCommand(.25)),
+                // clawClose);
 
-                SequentialCommandGroup driveBackSlow = new SequentialCommandGroup(
-                                new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25));
+                // // 66
 
-                SequentialCommandGroup driveBack = new SequentialCommandGroup(
-                                new driveAutonPIDCommand(-.7, driveSub).withTimeout(1.5));
+                // ParallelCommandGroup davinciTest = new ParallelCommandGroup(
+                // driveInitial.beforeStarting(new WaitCommand(2.5)),
+                // armRaise,
+                // cascadeRaise.beforeStarting(new WaitCommand(2.25)),
+                // clawOpen.beforeStarting(new WaitCommand(3.5)));
 
-                ParallelCommandGroup driveBack2ndStage = new ParallelCommandGroup(
-                                new driveAutonPIDCommand(-.7, driveSub).withTimeout(2));
-                // new armsPIDCommand(66, armsSub).withTimeout(.75)
+                // SequentialCommandGroup firstMovementAuton = new SequentialCommandGroup(
+                // davinciTest.andThen(() -> System.out.println("Initial Auton Done")),
+                // driveBackSlow,
+                // ArmCascadeClawDown,
+                // driveBack,
 
-                ParallelCommandGroup driveBack3ndStage = new ParallelCommandGroup(
-                                new driveAutonPIDCommand(-.55, driveSub).withTimeout(1.5));
+                // driveBack2ndStage,
+                // driveBack3ndStage,
 
-                SequentialCommandGroup armPostRaise = new SequentialCommandGroup(
-                                new armsPIDCommand(140, armsSub).withTimeout(1.25));
+                // chargeBalanceCommand.withTimeout(2)
+                // .andThen(() -> System.out.println("Charge Command Has Finished")));
 
-                SequentialCommandGroup armPostLower = new SequentialCommandGroup(
-                                new armsPIDCommand(-25, armsSub).withTimeout(1.25));
+                /*
+                 * SequentialCommandGroup redSideAuto = new SequentialCommandGroup(
+                 * davinciTest.andThen(() -> System.out.println("Initial Auton Done")),
+                 * driveBack
+                 * 
+                 * );
+                 */
 
-                SequentialCommandGroup cascadeLower = new SequentialCommandGroup(
-                                new cascadePIDCommand(0, cascadeSub).withTimeout(1.25));
+                /*
+                 * // delete this auton maybe
+                 * SequentialCommandGroup auto = new SequentialCommandGroup(
+                 * 
+                 * // new armsPIDCommand(150, armsSub).withTimeout(3),
+                 * 
+                 * new driveAutonPIDCommand(.85, driveSub).withTimeout(10),
+                 * 
+                 * new cascadePIDCommand(1.25, cascadeSub).withTimeout(1),
+                 * 
+                 * new WaitCommand(2),
+                 * 
+                 * new clawCommand(.3, clawSub).withTimeout(.4));
+                 * 
+                 * new driveAutonPIDCommand(-1, driveSub).beforeStarting(new WaitCommand(2));
+                 */
 
-                ParallelCommandGroup ArmCascadeClawDown = new ParallelCommandGroup(cascadeLower,
-                                armPostLower.beforeStarting(new WaitCommand(.25)), 
-                                 clawClose);
+                // chooser.addOption("Auto Middle", firstMovementAuton);
 
-                // 66
+                // Shuffleboard.getTab("Smartdashboard").add(chooser);
 
-                ParallelCommandGroup davinciTest = new ParallelCommandGroup(
-                                driveInitial.beforeStarting(new WaitCommand(2.5)),
-                                armRaise,
-                                cascadeRaise.beforeStarting(new WaitCommand(2.25)),
-                                clawOpen.beforeStarting(new WaitCommand(3.5)));
-
-                SequentialCommandGroup firstMovementAuton = new SequentialCommandGroup(
-                                davinciTest.andThen(() -> System.out.println("Initial Auton Done")),
-                                driveBackSlow,
-                                ArmCascadeClawDown,
-                                driveBack,
-
-                                driveBack2ndStage,
-                                driveBack3ndStage,
-
-                                chargeBalanceCommand.withTimeout(2)
-                                                .andThen(() -> System.out.println("Charge Command Has Finished")));
-
-                SequentialCommandGroup auto = new SequentialCommandGroup(
-
-                                // new armsPIDCommand(150, armsSub).withTimeout(3),
-
-                                new driveAutonPIDCommand(.85, driveSub).withTimeout(10),
-
-                                new cascadePIDCommand(1.25, cascadeSub).withTimeout(1),
-
-                                new WaitCommand(2),
-
-                                new clawCommand(.3, clawSub).withTimeout(.4));
-
-                new driveAutonPIDCommand(-1, driveSub).beforeStarting(new WaitCommand(2));
+                //////////////// Autonomous Commands ////////////
 
                 // return firstMovementAuton;
-                return firstMovementAuton;
+                return chooser.getSelected();
 
         }
 }

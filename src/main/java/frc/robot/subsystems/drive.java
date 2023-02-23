@@ -10,6 +10,8 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -47,10 +49,16 @@ public class drive extends SubsystemBase {
   public static final WPI_Pigeon2 pigeon = new WPI_Pigeon2(DriveConstants.gyroID);
 
   private final DifferentialDriveOdometry m_Odometry;
+  
+  CameraServer camera;
+  
 
   double x, y, a, distanceToTarget;
 
   public drive() {
+    camera.startAutomaticCapture();
+
+    
     resetEncoders();
   
     // PortForwarder.add(5800, "photonvision.local", 5800);

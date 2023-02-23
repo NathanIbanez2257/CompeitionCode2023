@@ -56,7 +56,7 @@ public final class Constants {
 
     public static final int
 
-    gio = 1, // joystick port
+    sebas = 1, // joystick port
 
         leftDriveAxis = 1, rightDriveAxis = 5, // drive axis for tank drive
 
@@ -93,7 +93,8 @@ public final class Constants {
   public static final class AutonConstatns {
     public static final double
 
-    KP = .68, KI = 0.5, KD = 0.002;
+    KP = .68, KI = 0.5, KD = 0.002,
+    turnKP = .2, turnKI = .00, turnKD = .00;
 
     // kp .37 kd .17
 
@@ -188,7 +189,7 @@ public final class Constants {
 
     public static final double
 
-    driveSpeed = .85, cascadeSpeed = .55, armSpeed = .45, clawSpeed = .35;
+    driveSpeed = .85, cascadeSpeed = .55, armSpeed = .55, clawSpeed = .35;
 
   }
 

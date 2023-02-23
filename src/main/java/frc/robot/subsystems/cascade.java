@@ -18,11 +18,14 @@ public class cascade extends SubsystemBase {
   public cascade() {
     breakMode();
 
+    cascade.setSelectedSensorPosition(-1190);
+
     cascade.configForwardSoftLimitEnable(true);
     cascade.configReverseSoftLimitEnable(true);
 
-    cascade.configForwardSoftLimitThreshold(118166);
-    cascade.configReverseSoftLimitThreshold(1023);
+    // 118166
+    cascade.configForwardSoftLimitThreshold(116825);
+    cascade.configReverseSoftLimitThreshold(1100);
 
   }
 
@@ -61,6 +64,6 @@ public class cascade extends SubsystemBase {
     // cascadeTop();
 
     SmartDashboard.putNumber("Cascade Position", cascadeTick2Feet());
-   // SmartDashboard.putNumber("Cascade Encoder Position", cascade.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Cascade Encoder Position", cascade.getSelectedSensorPosition());
   }
 }

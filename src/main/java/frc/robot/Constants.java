@@ -94,7 +94,8 @@ public final class Constants {
     public static final double
 
     KP = .68, KI = 0.5, KD = 0.002,
-    turnKP = .4, turnKI = .00, turnKD = .00;
+    turnKP = .005, turnKI = .0, turnKD = .0;
+    //turnKP = 1.5, turnKI = .58, turnKD = .03;
 
     // kp .37 kd .17
 

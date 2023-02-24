@@ -79,7 +79,7 @@ public class RobotContainer {
 
         private static final clawPIDCommand clawOpenPIDCommand = new clawPIDCommand(80, clawSub);
 
-        private static final turnPIDCommand RedTurnCommand = new turnPIDCommand(.4, driveSub);
+        private static final turnPIDCommand RedTurnCommand = new turnPIDCommand(-90, driveSub);
 
         private static final chargeCommand chargeBalanceCommand = new chargeCommand(driveSub);
 
@@ -192,8 +192,10 @@ public class RobotContainer {
                 JoystickButton limeTrack = new JoystickButton(nathan, NathanControllerConstants.limeTrackButton);
                 limeTrack.whileTrue(limelightAimCommand);
 
-                /*JoystickButton RedTurnPID = new JoystickButton(nathan, 15);
-                RedTurnPID.onTrue(RedTurnCommand); */
+                // turning pid testing 
+                
+                // JoystickButton RedTurnPID = new JoystickButton(nathan, 15);
+                // RedTurnPID.onTrue(RedTurnCommand.until(cascadePIDZero)); 
 
                 configureBindings();
 
@@ -300,11 +302,11 @@ public class RobotContainer {
                         new driveAutonPIDCommand(-.7, driveSub).withTimeout(1.5));
 
         ParallelCommandGroup RedDriveBack2ndStage = new ParallelCommandGroup(
-                        new driveAutonPIDCommand(-.7, driveSub).withTimeout(2));
+                        new driveAutonPIDCommand(-.5, driveSub).withTimeout(2));
         // new armsPIDCommand(66, armsSub).withTimeout(.75)
 
         ParallelCommandGroup RedDriveBack3ndStage = new ParallelCommandGroup(
-                        new driveAutonPIDCommand(-.55, driveSub).withTimeout(1.5));
+                        new driveAutonPIDCommand(-1.2, driveSub).withTimeout(1.5));
 
         SequentialCommandGroup RedArmPostRaise = new SequentialCommandGroup(
                         new armsPIDCommand(140, armsSub).withTimeout(1.25));
@@ -326,6 +328,7 @@ public class RobotContainer {
                         RedDriveBackSlow,
                         RedArmCascadeClawDown,
                         RedDriveBack,
+                        new WaitCommand(.5),
 
                         // have to adjust these values at competiton 
                         RedDriveBack2ndStage,
@@ -474,7 +477,8 @@ public class RobotContainer {
                  */
 
                 // return firstMovementAuton;
-                return chooser.getSelected();
+               // return chooser.getSelected();
+               return RedTurnCommand;
 
         }
 }

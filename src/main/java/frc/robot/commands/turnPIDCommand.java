@@ -16,54 +16,60 @@ public class turnPIDCommand extends CommandBase {
   private final drive driveSub;
   private final PIDController drivePID;
   private final double goal;
-
+  private boolean done;
 
   public turnPIDCommand(double setPoint, drive drive) {
     goal = setPoint;
     driveSub = drive;
     drivePID = new PIDController(AutonConstatns.turnKP, AutonConstatns.turnKI, AutonConstatns.turnKD);
 
-
     drivePID.setSetpoint(setPoint);
-    
+
     addRequirements(driveSub);
   }
 
   @Override
   public void initialize() {
     drivePID.reset();
-    drivePID.setTolerance(.02);
-    driveSub.resetEncoders();
+    //drivePID.setTolerance(.021);
+    driveSub.resetYaw();
 
     System.out.println("Turn PID Command Has Started");
-   }
+
+    // cascadePID.calculate(cascadeSub.cascadeTick2Feet(), goal);
+    /*
+     * cascadeSub.setVoltage(cascadePID.calculate(cascadeSub.cascadeTick2Feet(),
+     * goal) + feedForward.calculate(goal));
+     * 
+     * 
+     */
+
+  }
 
   @Override
   public void execute() {
 
-    double speed = drivePID.calculate(driveSub.leftNativeDistanceInMeters());
-    driveSub.move(-speed, speed);
+    done = drivePID.atSetpoint();
 
-    //cascadePID.calculate(cascadeSub.cascadeTick2Feet(), goal);
-     /*
-     cascadeSub.setVoltage(cascadePID.calculate(cascadeSub.cascadeTick2Feet(),
-     goal) + feedForward.calculate(goal));
+    double speed = drivePID.calculate(driveSub.getYaw(), goal);
 
-     
-     */
+    driveSub.move(speed, -speed);
 
     SmartDashboard.putBoolean("Tolerance Check Turn", drivePID.atSetpoint());
     SmartDashboard.putNumber("Drive Error Turn", drivePID.getPositionError());
+
   }
 
   @Override
   public void end(boolean interrupted) {
-    driveSub.move(0, 0);
+
+    System.out.println("Turn Command Has Ended\n\n");
+
   }
 
   @Override
   public boolean isFinished() {
-    return false;
+    return done;
   }
 
 }

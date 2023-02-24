@@ -228,6 +228,16 @@ public class drive extends SubsystemBase {
     return gyro.getRotation2d().getDegrees();
   }
 
+  public double getYaw()
+  {
+    return pigeon.getYaw();
+  }
+
+  public void resetYaw()
+  {
+    pigeon.setYaw(0);
+  }
+
   public double getTurnRate() {
     return -gyro.getRate();
   }
@@ -318,10 +328,13 @@ public class drive extends SubsystemBase {
     m_Odometry.update(gyro.getRotation2d(), leftNativeDistanceInMetersOdometry(),
         rightNativeDistanceInMetersOdometry());
 
-    SmartDashboard.putNumber("Pose X", m_Odometry.getPoseMeters().getX());
-    SmartDashboard.putNumber("Pose Y", m_Odometry.getPoseMeters().getY());
-    SmartDashboard.putNumber("Pose Gyro", pigeon.getRotation2d().getDegrees());
-    SmartDashboard.putNumber(" Gyro pose thingy", gyro.getRotation2d().getDegrees());
+    // SmartDashboard.putNumber("Pose X", m_Odometry.getPoseMeters().getX());
+    // SmartDashboard.putNumber("Pose Y", m_Odometry.getPoseMeters().getY());
+    // SmartDashboard.putNumber("Pose Gyro", pigeon.getRotation2d().getDegrees());
+    // SmartDashboard.putNumber(" Gyro pose thingy", gyro.getRotation2d().getDegrees());
+
+    SmartDashboard.putNumber("Gyro Yaw", pigeon.getYaw());
+
 
     SmartDashboard.putNumber("Gyro Rate", getTurnRate());
 

@@ -52,7 +52,7 @@ public final class Constants {
 
   }
 
-  public final class GioControllerConstants {
+  public final class SebasControllerConstants {
 
     public static final int
 
@@ -94,7 +94,7 @@ public final class Constants {
     public static final double
 
     KP = .68, KI = 0.5, KD = 0.002,
-    turnKP = .2, turnKI = .00, turnKD = .00;
+    turnKP = .4, turnKI = .00, turnKD = .00;
 
     // kp .37 kd .17
 
@@ -189,7 +189,7 @@ public final class Constants {
 
     public static final double
 
-    driveSpeed = .85, cascadeSpeed = .55, armSpeed = .55, clawSpeed = .35;
+    driveSpeed = .9, cascadeSpeed = .50, armSpeed = .55, clawSpeed = .35;
 
   }
 

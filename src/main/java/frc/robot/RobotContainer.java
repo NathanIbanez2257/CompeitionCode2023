@@ -4,37 +4,34 @@
 
 package frc.robot;
 
-import java.nio.file.Path;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
+// import java.nio.file.Path;
+// import edu.wpi.first.math.controller.PIDController;
+// import edu.wpi.first.math.controller.RamseteController;
+// import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+// import edu.wpi.first.math.geometry.Pose2d;
+// import edu.wpi.first.math.geometry.Rotation2d;
+// import edu.wpi.first.math.geometry.Translation2d;
+// import edu.wpi.first.math.trajectory.Trajectory;
+// import edu.wpi.first.math.trajectory.TrajectoryConfig;
+// import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+// import edu.wpi.first.math.trajectory.TrajectoryUtil;
+// import edu.wpi.first.wpilibj.DriverStation;
+// import edu.wpi.first.wpilibj.Filesystem;
+// import edu.wpi.first.wpilibj2.command.RamseteCommand;
+// import edu.wpi.first.wpilibj2.command.InstantCommand;
+
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.GioControllerConstants;
-import frc.robot.Constants.GyroConstants;
-import frc.robot.Constants.KineConstants;
+import frc.robot.Constants.SebasControllerConstants;
 import frc.robot.Constants.NathanControllerConstants;
 import frc.robot.Constants.SpeedConstants;
 import frc.robot.commands.aimRobotCommand;
@@ -46,6 +43,7 @@ import frc.robot.commands.chargeCommand;
 import frc.robot.commands.clawCommand;
 import frc.robot.commands.clawPIDCommand;
 import frc.robot.commands.driveAutonPIDCommand;
+import frc.robot.commands.turnPIDCommand;
 import frc.robot.subsystems.arms;
 import frc.robot.subsystems.cascade;
 import frc.robot.subsystems.claw;
@@ -81,10 +79,12 @@ public class RobotContainer {
 
         private static final clawPIDCommand clawOpenPIDCommand = new clawPIDCommand(80, clawSub);
 
+        private static final turnPIDCommand RedTurnCommand = new turnPIDCommand(.4, driveSub);
+
         private static final chargeCommand chargeBalanceCommand = new chargeCommand(driveSub);
 
         private static final Joystick nathan = new Joystick(NathanControllerConstants.nathan);
-        private static final Joystick sebas = new Joystick(GioControllerConstants.sebas);
+        private static final Joystick sebas = new Joystick(SebasControllerConstants.sebas);
 
         /*
          * String straightPath = "straight.wpilib.json";
@@ -115,7 +115,7 @@ public class RobotContainer {
                 driveSub.setDefaultCommand(nathanMove);
 
                 chooser.addOption("Middle Auto", MiddleAuto);
-                chooser.addOption("Red Side Auto", null);
+                chooser.addOption("Red Side Auto", RedSideAuto);
 
                 SmartDashboard.putData(chooser);
 
@@ -147,16 +147,16 @@ public class RobotContainer {
 
                 ///////////////// Gio Controls ///////////////////////
 
-                JoystickButton armUp = new JoystickButton(sebas, GioControllerConstants.armUpButton);
+                JoystickButton armUp = new JoystickButton(sebas, SebasControllerConstants.armUpButton);
                 armUp.whileTrue(armUpCommand);
 
-                JoystickButton armDown = new JoystickButton(sebas, GioControllerConstants.armDownButton);
+                JoystickButton armDown = new JoystickButton(sebas, SebasControllerConstants.armDownButton);
                 armDown.whileTrue(armDownCommand);
 
-                JoystickButton clawOpen = new JoystickButton(sebas, GioControllerConstants.clawOpenButton);
+                JoystickButton clawOpen = new JoystickButton(sebas, SebasControllerConstants.clawOpenButton);
                 clawOpen.whileTrue(clawOpenCommand);
 
-                JoystickButton clawClose = new JoystickButton(sebas, GioControllerConstants.clawCloseButton);
+                JoystickButton clawClose = new JoystickButton(sebas, SebasControllerConstants.clawCloseButton);
                 clawClose.whileTrue(clawCloseCommand);
 
                 JoystickButton armsHigh = new JoystickButton(sebas, 4);
@@ -192,11 +192,18 @@ public class RobotContainer {
                 JoystickButton limeTrack = new JoystickButton(nathan, NathanControllerConstants.limeTrackButton);
                 limeTrack.whileTrue(limelightAimCommand);
 
+                /*JoystickButton RedTurnPID = new JoystickButton(nathan, 15);
+                RedTurnPID.onTrue(RedTurnCommand); */
+
                 configureBindings();
 
         }
 
         //////////////// Autonomous Commands ////////////
+
+        //
+
+        ///////////////////////////// Middle Autonomous /////////////////////////////
 
         SequentialCommandGroup driveInitial = new SequentialCommandGroup(
                         new driveAutonPIDCommand(.85, driveSub).withTimeout(2.25));
@@ -242,23 +249,87 @@ public class RobotContainer {
 
         // 66
 
-        ParallelCommandGroup davinciTest = new ParallelCommandGroup(
+        ParallelCommandGroup CubeScore = new ParallelCommandGroup(
                         driveInitial.beforeStarting(new WaitCommand(2.5)),
                         armRaise,
                         cascadeRaise.beforeStarting(new WaitCommand(2.25)),
                         clawOpenAuto.beforeStarting(new WaitCommand(3.5)));
 
         SequentialCommandGroup MiddleAuto = new SequentialCommandGroup(
-                        davinciTest.andThen(() -> System.out.println("Initial Auton Done")),
+                        CubeScore.andThen(() -> System.out.println("Initial Auton Done")),
                         driveBackSlow,
                         ArmCascadeClawDown,
                         driveBack,
-
                         driveBack2ndStage,
                         driveBack3ndStage,
 
                         chargeBalanceCommand.withTimeout(2)
                                         .andThen(() -> System.out.println("Charge Command Has Finished")));
+
+        //
+
+        ///////////////////////////// Red Side Autonomous /////////////////////////////
+
+        SequentialCommandGroup RedDriveInitial = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(.85, driveSub).withTimeout(2.25));
+
+        SequentialCommandGroup RedArmRaise = new SequentialCommandGroup(
+                        new armsPIDCommand(125, armsSub).withTimeout(1.75));
+
+        SequentialCommandGroup RedCascadeRaise = new SequentialCommandGroup(
+                        new cascadePIDCommand(1.15, cascadeSub).withTimeout(1.75));
+
+        SequentialCommandGroup RedClawOpenAuto = new SequentialCommandGroup(
+                        new clawCommand(.3, clawSub).withTimeout(.4));
+
+        ParallelCommandGroup RedCubeScore = new ParallelCommandGroup(
+                        RedDriveInitial.beforeStarting(new WaitCommand(2.5)),
+                        RedArmRaise,
+                        RedCascadeRaise.beforeStarting(new WaitCommand(2.25)),
+                        RedClawOpenAuto.beforeStarting(new WaitCommand(3.5)));
+
+        //
+
+        SequentialCommandGroup RedClawCloseAuto = new SequentialCommandGroup(
+                        new clawCommand(-.3, clawSub).withTimeout(.4));
+
+        SequentialCommandGroup RedDriveBackSlow = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25));
+
+        SequentialCommandGroup RedDriveBack = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(-.7, driveSub).withTimeout(1.5));
+
+        ParallelCommandGroup RedDriveBack2ndStage = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-.7, driveSub).withTimeout(2));
+        // new armsPIDCommand(66, armsSub).withTimeout(.75)
+
+        ParallelCommandGroup RedDriveBack3ndStage = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-.55, driveSub).withTimeout(1.5));
+
+        SequentialCommandGroup RedArmPostRaise = new SequentialCommandGroup(
+                        new armsPIDCommand(140, armsSub).withTimeout(1.25));
+
+        SequentialCommandGroup RedArmPostLower = new SequentialCommandGroup(
+                        new armsPIDCommand(-25, armsSub).withTimeout(1.25));
+
+        SequentialCommandGroup RedCascadeLower = new SequentialCommandGroup(
+                        new cascadePIDCommand(0, cascadeSub).withTimeout(1.25));
+
+        ParallelCommandGroup RedArmCascadeClawDown = new ParallelCommandGroup(
+                        RedCascadeLower,
+                        RedArmPostLower.beforeStarting(new WaitCommand(.25)),
+                        RedClawCloseAuto);
+
+        //
+        SequentialCommandGroup RedSideAuto = new SequentialCommandGroup(
+                        RedCubeScore.andThen(() -> System.out.println("Charge Command Has Finished")),
+                        RedDriveBackSlow,
+                        RedArmCascadeClawDown,
+                        RedDriveBack,
+
+                        // have to adjust these values at competiton 
+                        RedDriveBack2ndStage,
+                        RedDriveBack3ndStage);
 
         /*
          * ParallelCommandGroup AutonomousPractice = new ParallelCommandGroup(
@@ -401,99 +472,6 @@ public class RobotContainer {
                  * return loadPathPlannerTrajectoryToRamseteCommand(andresPath, true);
                  * return loadPathPlannerTrajectoryToRamseteCommand(OfficialTestingPath, true);
                  */
-
-                // SequentialCommandGroup driveInitial = new SequentialCommandGroup(
-                // new driveAutonPIDCommand(.85, driveSub).withTimeout(2.25));
-
-                // SequentialCommandGroup armRaise = new SequentialCommandGroup(
-                // new armsPIDCommand(125, armsSub).withTimeout(1.75));
-
-                // SequentialCommandGroup cascadeRaise = new SequentialCommandGroup(
-                // new cascadePIDCommand(1.15, cascadeSub).withTimeout(1.75));
-
-                // SequentialCommandGroup clawOpen = new SequentialCommandGroup(
-                // new clawCommand(.3, clawSub).withTimeout(.4));
-
-                // SequentialCommandGroup clawClose = new SequentialCommandGroup(
-                // new clawCommand(-.3, clawSub).withTimeout(.4));
-
-                // SequentialCommandGroup driveBackSlow = new SequentialCommandGroup(
-                // new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25));
-
-                // SequentialCommandGroup driveBack = new SequentialCommandGroup(
-                // new driveAutonPIDCommand(-.7, driveSub).withTimeout(1.5));
-
-                // ParallelCommandGroup driveBack2ndStage = new ParallelCommandGroup(
-                // new driveAutonPIDCommand(-.7, driveSub).withTimeout(2));
-                // // new armsPIDCommand(66, armsSub).withTimeout(.75)
-
-                // ParallelCommandGroup driveBack3ndStage = new ParallelCommandGroup(
-                // new driveAutonPIDCommand(-.55, driveSub).withTimeout(1.5));
-
-                // SequentialCommandGroup armPostRaise = new SequentialCommandGroup(
-                // new armsPIDCommand(140, armsSub).withTimeout(1.25));
-
-                // SequentialCommandGroup armPostLower = new SequentialCommandGroup(
-                // new armsPIDCommand(-25, armsSub).withTimeout(1.25));
-
-                // SequentialCommandGroup cascadeLower = new SequentialCommandGroup(
-                // new cascadePIDCommand(0, cascadeSub).withTimeout(1.25));
-
-                // ParallelCommandGroup ArmCascadeClawDown = new ParallelCommandGroup(
-                // cascadeLower,
-                // armPostLower.beforeStarting(new WaitCommand(.25)),
-                // clawClose);
-
-                // // 66
-
-                // ParallelCommandGroup davinciTest = new ParallelCommandGroup(
-                // driveInitial.beforeStarting(new WaitCommand(2.5)),
-                // armRaise,
-                // cascadeRaise.beforeStarting(new WaitCommand(2.25)),
-                // clawOpen.beforeStarting(new WaitCommand(3.5)));
-
-                // SequentialCommandGroup firstMovementAuton = new SequentialCommandGroup(
-                // davinciTest.andThen(() -> System.out.println("Initial Auton Done")),
-                // driveBackSlow,
-                // ArmCascadeClawDown,
-                // driveBack,
-
-                // driveBack2ndStage,
-                // driveBack3ndStage,
-
-                // chargeBalanceCommand.withTimeout(2)
-                // .andThen(() -> System.out.println("Charge Command Has Finished")));
-
-                /*
-                 * SequentialCommandGroup redSideAuto = new SequentialCommandGroup(
-                 * davinciTest.andThen(() -> System.out.println("Initial Auton Done")),
-                 * driveBack
-                 * 
-                 * );
-                 */
-
-                /*
-                 * // delete this auton maybe
-                 * SequentialCommandGroup auto = new SequentialCommandGroup(
-                 * 
-                 * // new armsPIDCommand(150, armsSub).withTimeout(3),
-                 * 
-                 * new driveAutonPIDCommand(.85, driveSub).withTimeout(10),
-                 * 
-                 * new cascadePIDCommand(1.25, cascadeSub).withTimeout(1),
-                 * 
-                 * new WaitCommand(2),
-                 * 
-                 * new clawCommand(.3, clawSub).withTimeout(.4));
-                 * 
-                 * new driveAutonPIDCommand(-1, driveSub).beforeStarting(new WaitCommand(2));
-                 */
-
-                // chooser.addOption("Auto Middle", firstMovementAuton);
-
-                // Shuffleboard.getTab("Smartdashboard").add(chooser);
-
-                //////////////// Autonomous Commands ////////////
 
                 // return firstMovementAuton;
                 return chooser.getSelected();

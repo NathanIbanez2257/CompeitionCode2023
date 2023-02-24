@@ -4,15 +4,11 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.AutonConstatns;
-import frc.robot.Constants.CascadeConstants;
-import frc.robot.subsystems.cascade;
+
 import frc.robot.subsystems.drive;
 
 public class turnPIDCommand extends CommandBase {
@@ -38,6 +34,8 @@ public class turnPIDCommand extends CommandBase {
     drivePID.reset();
     drivePID.setTolerance(.02);
     driveSub.resetEncoders();
+
+    System.out.println("Turn PID Command Has Started");
    }
 
   @Override
@@ -54,8 +52,8 @@ public class turnPIDCommand extends CommandBase {
      
      */
 
-    SmartDashboard.putBoolean("Tolerance Check Drive", drivePID.atSetpoint());
-    SmartDashboard.putNumber("Drive Error", drivePID.getPositionError());
+    SmartDashboard.putBoolean("Tolerance Check Turn", drivePID.atSetpoint());
+    SmartDashboard.putNumber("Drive Error Turn", drivePID.getPositionError());
   }
 
   @Override

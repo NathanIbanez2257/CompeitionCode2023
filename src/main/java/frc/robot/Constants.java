@@ -93,7 +93,8 @@ public final class Constants {
   public static final class AutonConstatns {
     public static final double
 
-    KP = .68, KI = 0.5, KD = 0.002,
+    KP = .7, KI = 0.6, KD = 0.002,
+    KPHard = .8, KIHard = .5, KDHard = .004,
     turnKP = .005, turnKI = .0, turnKD = .0;
     //turnKP = 1.5, turnKI = .58, turnKD = .03;
 

@@ -63,7 +63,7 @@ public class turnPIDCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
 
-    System.out.println("Turn Command Has Ended\n\n");
+    System.out.println("\n \n Turn Command Has Ended");
 
   }
 

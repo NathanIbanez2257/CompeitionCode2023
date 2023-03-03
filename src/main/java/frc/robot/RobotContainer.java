@@ -43,6 +43,7 @@ import frc.robot.commands.chargeCommand;
 import frc.robot.commands.clawCommand;
 import frc.robot.commands.clawPIDCommand;
 import frc.robot.commands.driveAutonPIDCommand;
+import frc.robot.commands.drivePIDHardCommand;
 import frc.robot.commands.turnPIDCommand;
 import frc.robot.subsystems.arms;
 import frc.robot.subsystems.cascade;
@@ -116,6 +117,7 @@ public class RobotContainer {
 
                 chooser.addOption("Middle Auto", MiddleAuto);
                 chooser.addOption("Red Side Auto", RedSideAuto);
+                chooser.addOption("No Auton", null);
 
                 SmartDashboard.putData(chooser);
 
@@ -222,18 +224,19 @@ public class RobotContainer {
         SequentialCommandGroup clawCloseAuto = new SequentialCommandGroup(
                         new clawCommand(-.3, clawSub).withTimeout(.4));
 
-        SequentialCommandGroup driveBackSlow = new SequentialCommandGroup(
-                        new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25));
+        ParallelCommandGroup driveBackSlow = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25), 
+                        new armsPIDCommand(130, armsSub).withTimeout(.75));
 
         SequentialCommandGroup driveBack = new SequentialCommandGroup(
-                        new driveAutonPIDCommand(-.7, driveSub).withTimeout(1.5));
+                        new driveAutonPIDCommand(-.76, driveSub).withTimeout(1.5));
 
         ParallelCommandGroup driveBack2ndStage = new ParallelCommandGroup(
-                        new driveAutonPIDCommand(-.7, driveSub).withTimeout(2));
+                        new drivePIDHardCommand(-.9, driveSub).withTimeout(2));
         // new armsPIDCommand(66, armsSub).withTimeout(.75)
 
         ParallelCommandGroup driveBack3ndStage = new ParallelCommandGroup(
-                        new driveAutonPIDCommand(-.55, driveSub).withTimeout(1.5));
+                        new driveAutonPIDCommand(-.5, driveSub).withTimeout(1.5));
 
         SequentialCommandGroup armPostRaise = new SequentialCommandGroup(
                         new armsPIDCommand(140, armsSub).withTimeout(1.25));
@@ -477,8 +480,8 @@ public class RobotContainer {
                  */
 
                 // return firstMovementAuton;
-               // return chooser.getSelected();
-               return RedTurnCommand;
+               return chooser.getSelected();
+        //        return RedTurnCommand;
 
         }
 }

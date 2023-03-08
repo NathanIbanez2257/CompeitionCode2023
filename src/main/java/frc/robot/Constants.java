@@ -182,16 +182,20 @@ public final class Constants {
 
     gyroAngle = 0,
 
-        shortGyroKP = .008, shortGyroKI = .006, shortGyroKD = .00,
+        // shortGyroKP = .008, shortGyroKI = .006, shortGyroKD = .00,
 
-        longGyroKP = .025, longGyroKI = .0008, longGyroKD = .005;
+        // longGyroKP = .025, longGyroKI = .0008, longGyroKD = .005;
+
+        shortGyroKP = .000, shortGyroKI = .000, shortGyroKD = .00,
+
+        longGyroKP = .00, longGyroKI = .000, longGyroKD = .00;
   }
 
   public static final class SpeedConstants {
 
     public static final double
 
-    driveSpeed = .9, cascadeSpeed = .50, armSpeed = .55, clawSpeed = .35;
+    driveSpeed = .85, cascadeSpeed = .50, armSpeed = .50, clawSpeed = .35; //arm speed prior 55%
 
   }
 

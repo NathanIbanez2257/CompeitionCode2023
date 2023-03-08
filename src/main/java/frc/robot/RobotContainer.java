@@ -40,6 +40,7 @@ import frc.robot.commands.armsPIDCommand;
 import frc.robot.commands.cascadeCommand;
 import frc.robot.commands.cascadePIDCommand;
 import frc.robot.commands.chargeCommand;
+import frc.robot.commands.chargePIDCommand;
 import frc.robot.commands.clawCommand;
 import frc.robot.commands.clawPIDCommand;
 import frc.robot.commands.driveAutonPIDCommand;
@@ -62,6 +63,7 @@ public class RobotContainer {
 
         private static final armsPIDCommand armsZeroCommand = new armsPIDCommand(0, armsSub);
         private static final armsPIDCommand armsHighCommand = new armsPIDCommand(143, armsSub);
+        private static final armsPIDCommand armsHumanCommand = new armsPIDCommand(135, armsSub);
 
         // 143
 
@@ -78,11 +80,15 @@ public class RobotContainer {
         private static final clawCommand clawOpenCommand = new clawCommand(SpeedConstants.clawSpeed, clawSub);
         private static final clawCommand clawCloseCommand = new clawCommand(-SpeedConstants.clawSpeed, clawSub);
 
-        private static final clawPIDCommand clawOpenPIDCommand = new clawPIDCommand(80, clawSub);
+        private static final clawPIDCommand clawOpenPIDCommand = new clawPIDCommand(85, clawSub);
+
+        private static final clawPIDCommand clawZeroPIDCommand = new clawPIDCommand(0, clawSub); // button 15
 
         private static final turnPIDCommand RedTurnCommand = new turnPIDCommand(-90, driveSub);
 
         private static final chargeCommand chargeBalanceCommand = new chargeCommand(driveSub);
+        private static final chargePIDCommand chargeBalancePIDCommand = new chargePIDCommand(0, driveSub);
+
 
         private static final Joystick nathan = new Joystick(NathanControllerConstants.nathan);
         private static final Joystick sebas = new Joystick(SebasControllerConstants.sebas);
@@ -116,8 +122,9 @@ public class RobotContainer {
                 driveSub.setDefaultCommand(nathanMove);
 
                 chooser.addOption("Middle Auto", MiddleAuto);
-                chooser.addOption("Red Side Auto", RedSideAuto);
+                chooser.addOption("Side Auto", SideAuto);
                 chooser.addOption("No Auton", null);
+                chooser.addOption("New Middle Auto", newMiddleAuto);
 
                 SmartDashboard.putData(chooser);
 
@@ -164,11 +171,17 @@ public class RobotContainer {
                 JoystickButton armsHigh = new JoystickButton(sebas, 4);
                 armsHigh.onTrue(armsHighCommand);
 
+                JoystickButton armsHuman = new JoystickButton(sebas, 3);
+                armsHuman.onTrue(armsHumanCommand);
+
                 JoystickButton armsZero = new JoystickButton(sebas, 2);
                 armsZero.onTrue(armsZeroCommand);
 
                 JoystickButton clawOpenPID = new JoystickButton(sebas, 1);
                 clawOpenPID.onTrue(clawOpenPIDCommand);
+
+                JoystickButton clawClosePID = new JoystickButton(sebas, 15);
+                clawClosePID.onTrue(clawZeroPIDCommand);
 
                 ///////////////// Nathan Controls ///////////////////////
 
@@ -194,10 +207,10 @@ public class RobotContainer {
                 JoystickButton limeTrack = new JoystickButton(nathan, NathanControllerConstants.limeTrackButton);
                 limeTrack.whileTrue(limelightAimCommand);
 
-                // turning pid testing 
-                
+                // turning pid testing
+
                 // JoystickButton RedTurnPID = new JoystickButton(nathan, 15);
-                // RedTurnPID.onTrue(RedTurnCommand.until(cascadePIDZero)); 
+                // RedTurnPID.onTrue(RedTurnCommand.until(cascadePIDZero));
 
                 configureBindings();
 
@@ -225,19 +238,18 @@ public class RobotContainer {
                         new clawCommand(-.3, clawSub).withTimeout(.4));
 
         ParallelCommandGroup driveBackSlow = new ParallelCommandGroup(
-                        new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25), 
+                        new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25),
                         new armsPIDCommand(130, armsSub).withTimeout(.75));
 
         SequentialCommandGroup driveBack = new SequentialCommandGroup(
-                        new driveAutonPIDCommand(-.76, driveSub).withTimeout(1.5));
+                        new driveAutonPIDCommand(-.78, driveSub).withTimeout(1.5));
 
         ParallelCommandGroup driveBack2ndStage = new ParallelCommandGroup(
-                        new drivePIDHardCommand(-.9, driveSub).withTimeout(2));
+                        new drivePIDHardCommand(-.7, driveSub).withTimeout(2));
         // new armsPIDCommand(66, armsSub).withTimeout(.75)
 
         ParallelCommandGroup driveBack3ndStage = new ParallelCommandGroup(
-                        new driveAutonPIDCommand(-.5, driveSub).withTimeout(1.5));
-
+                        new driveAutonPIDCommand(-.38, driveSub).withTimeout(1.5));;
         SequentialCommandGroup armPostRaise = new SequentialCommandGroup(
                         new armsPIDCommand(140, armsSub).withTimeout(1.25));
 
@@ -254,11 +266,79 @@ public class RobotContainer {
 
         // 66
 
+        //////////////////////////// New Auton Test ////////////////////////////////
+
+        SequentialCommandGroup newDriveInitial = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(.85, driveSub).withTimeout(2.25));
+
+        SequentialCommandGroup newArmRaise = new SequentialCommandGroup(
+                        new armsPIDCommand(125, armsSub).withTimeout(1.75));
+
+        SequentialCommandGroup newCascadeRaise = new SequentialCommandGroup(
+                        new cascadePIDCommand(1.15, cascadeSub).withTimeout(1.75));
+
+        SequentialCommandGroup newClawOpenAuto = new SequentialCommandGroup(
+                        new clawCommand(.3, clawSub).withTimeout(.4));
+
+        SequentialCommandGroup newClawCloseAuto = new SequentialCommandGroup(
+                        new clawCommand(-.3, clawSub).withTimeout(.4));
+
+        ParallelCommandGroup newDriveBackSlow = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-.9, driveSub).withTimeout(1.25));
+        // ,
+        // new armsPIDCommand(130, armsSub).withTimeout(.75));
+
+        SequentialCommandGroup newDriveBack = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(-.76, driveSub).withTimeout(1.5));
+
+        ParallelCommandGroup newDriveJerk = new ParallelCommandGroup(
+                        new drivePIDHardCommand(.8, driveSub).withTimeout(.15));
+
+        ParallelCommandGroup newDriveBack2ndStage = new ParallelCommandGroup(
+                        new drivePIDHardCommand(-.1, driveSub).withTimeout(2));
+        // new armsPIDCommand(66, armsSub).withTimeout(.75));
+
+        ParallelCommandGroup newDriveBack3ndStage = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-.17, driveSub).withTimeout(1.5));
+
+        SequentialCommandGroup newArmPostRaise = new SequentialCommandGroup(
+                        new armsPIDCommand(140, armsSub).withTimeout(1.25));
+
+        SequentialCommandGroup newArmPostLower = new SequentialCommandGroup(
+                        new armsPIDCommand(-25, armsSub).withTimeout(1.25));
+
+        SequentialCommandGroup newCascadeLower = new SequentialCommandGroup(
+                        new cascadePIDCommand(0, cascadeSub).withTimeout(1.25));
+
+        ParallelCommandGroup newArmCascadeClawDown = new ParallelCommandGroup(
+                        newCascadeLower,
+                        newArmPostLower.beforeStarting(new WaitCommand(.25)),
+                        newClawCloseAuto);
+
+        ParallelCommandGroup newCubeScore = new ParallelCommandGroup(
+                        newDriveInitial.beforeStarting(new WaitCommand(2.5)),
+                        newArmRaise,
+                        newCascadeRaise.beforeStarting(new WaitCommand(2.25)),
+                        newClawOpenAuto.beforeStarting(new WaitCommand(3.5)));
+
         ParallelCommandGroup CubeScore = new ParallelCommandGroup(
                         driveInitial.beforeStarting(new WaitCommand(2.5)),
                         armRaise,
                         cascadeRaise.beforeStarting(new WaitCommand(2.25)),
                         clawOpenAuto.beforeStarting(new WaitCommand(3.5)));
+
+        SequentialCommandGroup newMiddleAuto = new SequentialCommandGroup(
+                        newCubeScore.andThen(() -> System.out.println("Initial Auton Done")),
+                        newDriveBackSlow,
+                        newArmCascadeClawDown,
+                        new WaitCommand(.2),
+                        newDriveJerk,
+                        newDriveBack,
+                        newDriveBack2ndStage,
+                        newDriveBack3ndStage,
+
+                        chargeBalanceCommand.withTimeout(1.25)
+                                        .andThen(() -> System.out.println("Charge Command Has Finished")));
 
         SequentialCommandGroup MiddleAuto = new SequentialCommandGroup(
                         CubeScore.andThen(() -> System.out.println("Initial Auton Done")),
@@ -268,74 +348,91 @@ public class RobotContainer {
                         driveBack2ndStage,
                         driveBack3ndStage,
 
-                        chargeBalanceCommand.withTimeout(2)
+                        new chargeCommand(driveSub).withTimeout(1.25)
                                         .andThen(() -> System.out.println("Charge Command Has Finished")));
+
+
+        ////////////////////////        New Autonomous Testing Post Utah                /////////////////////////////
+
+        SequentialCommandGroup autoTest1;
 
         //
 
         ///////////////////////////// Red Side Autonomous /////////////////////////////
 
-        SequentialCommandGroup RedDriveInitial = new SequentialCommandGroup(
+        SequentialCommandGroup SideDriveInitial = new SequentialCommandGroup(
                         new driveAutonPIDCommand(.85, driveSub).withTimeout(2.25));
 
-        SequentialCommandGroup RedArmRaise = new SequentialCommandGroup(
+        SequentialCommandGroup SideArmRaise = new SequentialCommandGroup(
                         new armsPIDCommand(125, armsSub).withTimeout(1.75));
 
-        SequentialCommandGroup RedCascadeRaise = new SequentialCommandGroup(
+        SequentialCommandGroup SideCascadeRaise = new SequentialCommandGroup(
                         new cascadePIDCommand(1.15, cascadeSub).withTimeout(1.75));
 
-        SequentialCommandGroup RedClawOpenAuto = new SequentialCommandGroup(
+        SequentialCommandGroup SideClawOpenAuto = new SequentialCommandGroup(
                         new clawCommand(.3, clawSub).withTimeout(.4));
 
-        ParallelCommandGroup RedCubeScore = new ParallelCommandGroup(
-                        RedDriveInitial.beforeStarting(new WaitCommand(2.5)),
-                        RedArmRaise,
-                        RedCascadeRaise.beforeStarting(new WaitCommand(2.25)),
-                        RedClawOpenAuto.beforeStarting(new WaitCommand(3.5)));
+        ParallelCommandGroup SideCubeScore = new ParallelCommandGroup(
+                        SideDriveInitial.beforeStarting(new WaitCommand(2.5)),
+                        SideArmRaise,
+                        SideCascadeRaise.beforeStarting(new WaitCommand(2.25)),
+                        SideClawOpenAuto.beforeStarting(new WaitCommand(3.5)));
 
         //
 
-        SequentialCommandGroup RedClawCloseAuto = new SequentialCommandGroup(
+        SequentialCommandGroup SideClawCloseAuto = new SequentialCommandGroup(
                         new clawCommand(-.3, clawSub).withTimeout(.4));
 
-        SequentialCommandGroup RedDriveBackSlow = new SequentialCommandGroup(
+        // SequentialCommandGroup SideDriveBackSlow = new SequentialCommandGroup(
+        // new driveAutonPIDCommand(-.9, driveSub).withTimeout(1.25));
+        SequentialCommandGroup SideDriveBackSlow = new SequentialCommandGroup(
                         new driveAutonPIDCommand(-.8, driveSub).withTimeout(1.25));
 
-        SequentialCommandGroup RedDriveBack = new SequentialCommandGroup(
-                        new driveAutonPIDCommand(-.7, driveSub).withTimeout(1.5));
+        SequentialCommandGroup SideDriveBack = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(-1, driveSub).withTimeout(1.5));
 
-        ParallelCommandGroup RedDriveBack2ndStage = new ParallelCommandGroup(
-                        new driveAutonPIDCommand(-.5, driveSub).withTimeout(2));
+        SequentialCommandGroup SideDriveForward = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(.5, driveSub).withTimeout(1.75));
+
+        ParallelCommandGroup SideDriveBack2ndStage = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-.8, driveSub).withTimeout(2));
         // new armsPIDCommand(66, armsSub).withTimeout(.75)
 
-        ParallelCommandGroup RedDriveBack3ndStage = new ParallelCommandGroup(
-                        new driveAutonPIDCommand(-1.2, driveSub).withTimeout(1.5));
+        ParallelCommandGroup SideDriveBack3ndStage = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-1, driveSub).withTimeout(1.5));
 
-        SequentialCommandGroup RedArmPostRaise = new SequentialCommandGroup(
+        ParallelCommandGroup SideDriveBack4ndStage = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-.5, driveSub).withTimeout(1.5));
+
+        SequentialCommandGroup SideArmPostRaise = new SequentialCommandGroup(
                         new armsPIDCommand(140, armsSub).withTimeout(1.25));
 
-        SequentialCommandGroup RedArmPostLower = new SequentialCommandGroup(
+        SequentialCommandGroup SideArmPostLower = new SequentialCommandGroup(
                         new armsPIDCommand(-25, armsSub).withTimeout(1.25));
 
-        SequentialCommandGroup RedCascadeLower = new SequentialCommandGroup(
+        SequentialCommandGroup SideCascadeLower = new SequentialCommandGroup(
                         new cascadePIDCommand(0, cascadeSub).withTimeout(1.25));
 
-        ParallelCommandGroup RedArmCascadeClawDown = new ParallelCommandGroup(
-                        RedCascadeLower,
-                        RedArmPostLower.beforeStarting(new WaitCommand(.25)),
-                        RedClawCloseAuto);
+        ParallelCommandGroup SideArmCascadeClawDown = new ParallelCommandGroup(
+                        SideCascadeLower,
+                        SideArmPostLower.beforeStarting(new WaitCommand(.25)),
+                        SideClawCloseAuto);
 
         //
-        SequentialCommandGroup RedSideAuto = new SequentialCommandGroup(
-                        RedCubeScore.andThen(() -> System.out.println("Charge Command Has Finished")),
-                        RedDriveBackSlow,
-                        RedArmCascadeClawDown,
-                        RedDriveBack,
-                        new WaitCommand(.5),
+        SequentialCommandGroup SideAuto = new SequentialCommandGroup(
+                        SideCubeScore.andThen(() -> System.out.println("Charge Command Has Finished")),
+                        SideDriveBackSlow,
+                        new WaitCommand(.15),
+                        SideArmCascadeClawDown,
+                        new WaitCommand(.25),
+                        SideDriveBack, SideDriveBack2ndStage);
+                        // SideDriveBack,
+                        // // new WaitCommand(.5),
 
-                        // have to adjust these values at competiton 
-                        RedDriveBack2ndStage,
-                        RedDriveBack3ndStage);
+                        // // have to adjust these values at competiton
+                        // SideDriveBack2ndStage,
+                        // SideDriveBack3ndStage,
+                        // SideDriveBack4ndStage);
 
         /*
          * ParallelCommandGroup AutonomousPractice = new ParallelCommandGroup(
@@ -480,8 +577,8 @@ public class RobotContainer {
                  */
 
                 // return firstMovementAuton;
-               return chooser.getSelected();
-        //        return RedTurnCommand;
+                return chooser.getSelected();
+                // return RedTurnCommand;
 
         }
 }

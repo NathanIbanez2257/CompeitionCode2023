@@ -4,10 +4,7 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.CascadeConstants;
@@ -19,15 +16,13 @@ public class cascadePIDCommand extends CommandBase {
   private final PIDController cascadePID;
   private final double goal;
 
-  private final ElevatorFeedforward feedForward;
-
   public cascadePIDCommand(double setPoint, cascade cascade) {
     goal = setPoint;
     cascadeSub = cascade;
     cascadePID = new PIDController(CascadeConstants.KP, CascadeConstants.KI, CascadeConstants.KD);
 
-    feedForward = new ElevatorFeedforward(CascadeConstants.ksVolts,
-    CascadeConstants.kgVolts, CascadeConstants.kvVoltSecondPerMeters);
+    // feedForward = new ElevatorFeedforward(CascadeConstants.ksVolts,
+    // CascadeConstants.kgVolts, CascadeConstants.kvVoltSecondPerMeters);
 
     cascadePID.setSetpoint(setPoint);
     
@@ -66,9 +61,9 @@ public class cascadePIDCommand extends CommandBase {
     return false;
   }
 
-  private void cascadeWithFeedforwardPID(double cascadeVelocitySetpoint) {
-    cascadeSub.setVoltage(feedForward.calculate(cascadeVelocitySetpoint)
-        + cascadePID.calculate(cascadeSub.cascadeVelocityFeetPerSecond(), cascadeVelocitySetpoint));
-  }
+  // private void cascadeWithFeedforwardPID(double cascadeVelocitySetpoint) {
+  //   cascadeSub.setVoltage(feedForward.calculate(cascadeVelocitySetpoint)
+  //       + cascadePID.calculate(cascadeSub.cascadeVelocityFeetPerSecond(), cascadeVelocitySetpoint));
+  // }
 
 }

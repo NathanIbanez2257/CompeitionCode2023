@@ -23,10 +23,8 @@ public class chargePIDCommand extends CommandBase {
     gyroLong = new PIDController(GyroConstants.longGyroKP, GyroConstants.longGyroKI, GyroConstants.longGyroKD);
     gyroShort = new PIDController(GyroConstants.shortGyroKP, GyroConstants.shortGyroKI, GyroConstants.shortGyroKD);
 
-
     gyroLong.setSetpoint(setPoint);
     gyroShort.setSetpoint(setPoint);
-
 
     addRequirements(driveSub);
   }
@@ -36,7 +34,7 @@ public class chargePIDCommand extends CommandBase {
     gyroLong.reset();
     gyroShort.reset();
 
-    //drivePID.setTolerance(.021);
+    // drivePID.setTolerance(.021);
     System.out.println("Charge PID Command Has Started");
 
   }
@@ -44,27 +42,17 @@ public class chargePIDCommand extends CommandBase {
   @Override
   public void execute() {
 
-    if(driveSub.getVertical() > 5)
+    if(Math.abs(driveSub.getVertical()) > 9)
     {
       done = gyroLong.atSetpoint();
-      double speedLong = gyroLong.calculate(driveSub.getYaw(), goal);
+      double speedLong = gyroLong.calculate(driveSub.getVertical(), goal);
 
-      driveSub.move(speedLong, speedLong);
+      driveSub.move(-speedLong, -speedLong);
     }
 
-    else{
 
-    done2 = gyroShort.atSetpoint();
-
-    double speedShort = gyroShort.calculate(driveSub.getYaw(), goal);
-
-
-    driveSub.move(speedShort, speedShort);
-
-    // SmartDashboard.putBoolean("Tolerance Check Turn", drivePID.atSetpoint());
-    // SmartDashboard.putNumber("Drive Error Turn", drivePID.getPositionError());
-    }
-
+    SmartDashboard.putNumber("GyroLong Error", gyroLong.getPositionError());
+    SmartDashboard.putBoolean("GyroLong Check", gyroLong.atSetpoint());
   }
 
   @Override
@@ -77,7 +65,9 @@ public class chargePIDCommand extends CommandBase {
   @Override
   public boolean isFinished() {
 
-    return done || done2;
+    // return done || done2;
+    return done;
+
   }
 
 }

@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClawConstants;
+import frc.robot.commands.clawPIDCommand;
 
 public class claw extends SubsystemBase {
 
@@ -17,7 +18,8 @@ public class claw extends SubsystemBase {
 
   public claw() {
     // test claw PIDS tommorow morning
-    claw.setSelectedSensorPosition(0);
+
+    // claw.setSelectedSensorPosition(0);
 
     claw.setNeutralMode(NeutralMode.Brake);
   }
@@ -39,4 +41,6 @@ public class claw extends SubsystemBase {
     SmartDashboard.putNumber("Claw Encoder", claw.getSelectedSensorPosition());
     SmartDashboard.putNumber("Claw To Inches", clawTickToDegrees());
   }
+
+
 }

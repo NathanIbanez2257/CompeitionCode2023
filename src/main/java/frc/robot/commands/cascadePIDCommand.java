@@ -15,14 +15,13 @@ public class cascadePIDCommand extends CommandBase {
   private final cascade cascadeSub;
   private final PIDController cascadePID;
   private final double goal;
+  private boolean done;
 
   public cascadePIDCommand(double setPoint, cascade cascade) {
     goal = setPoint;
     cascadeSub = cascade;
     cascadePID = new PIDController(CascadeConstants.KP, CascadeConstants.KI, CascadeConstants.KD);
 
-    // feedForward = new ElevatorFeedforward(CascadeConstants.ksVolts,
-    // CascadeConstants.kgVolts, CascadeConstants.kvVoltSecondPerMeters);
 
     cascadePID.setSetpoint(setPoint);
     
@@ -32,38 +31,32 @@ public class cascadePIDCommand extends CommandBase {
   @Override
   public void initialize() {
     cascadePID.reset();
-    cascadePID.setTolerance(.1);
+    cascadePID.setTolerance(0.005);
+    System.out.println("\n\nCascade PID Command Has Started\n\n");
+
   }
 
   @Override
   public void execute() {
 
-    double speed = cascadePID.calculate(cascadeSub.cascadeTick2Feet());
+    done = cascadePID.atSetpoint();
+    double speed = cascadePID.calculate(cascadeSub.cascadeTick2Feet(), goal);
     cascadeSub.move(speed);
-    //cascadePID.calculate(cascadeSub.cascadeTick2Feet(), goal);
-     /*
-     cascadeSub.setVoltage(cascadePID.calculate(cascadeSub.cascadeTick2Feet(),
-     goal) + feedForward.calculate(goal));
-
-     
-     */
-
-    SmartDashboard.putBoolean("Tolerance Check", cascadePID.atSetpoint());
+  
+    SmartDashboard.putBoolean("Cascade Check", cascadePID.atSetpoint());
+    SmartDashboard.putNumber("Cascade Error", cascadePID.getPositionError());
   }
 
   @Override
   public void end(boolean interrupted) {
     cascadeSub.move(0);
+    System.out.println("\n\nCascade PID Command Has Finished\n\n");
+
   }
 
   @Override
   public boolean isFinished() {
-    return false;
+    return done;
   }
-
-  // private void cascadeWithFeedforwardPID(double cascadeVelocitySetpoint) {
-  //   cascadeSub.setVoltage(feedForward.calculate(cascadeVelocitySetpoint)
-  //       + cascadePID.calculate(cascadeSub.cascadeVelocityFeetPerSecond(), cascadeVelocitySetpoint));
-  // }
 
 }

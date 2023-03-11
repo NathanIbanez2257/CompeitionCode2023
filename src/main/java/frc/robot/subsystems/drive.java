@@ -64,10 +64,7 @@ public class drive extends SubsystemBase {
     // PortForwarder.add(5800, "photonvision.local", 5800);
     setBreakMode();
     followSides();
-    // gyro.reset();
-
-    gyro.calibrate();
-    gyro.reset();
+    
     rightSide.setInverted(true);
 
     m_Odometry = new DifferentialDriveOdometry(gyro.getRotation2d(), leftNativeDistanceInMetersOdometry(),

@@ -93,8 +93,18 @@ public final class Constants {
   public static final class AutonConstatns {
     public static final double
 
-    KP = .7, KI = 0.6, KD = 0.002,
-    KPHard = .8, KIHard = .5, KDHard = .004,
+    // KP = .7, KI = 0.6, KD = 0.002,
+
+    KP = .4, KI = 0.3, KD = 0.02,
+
+
+
+    KPHard = .55, KIHard = 0.22, KDHard = .002,
+
+    // KPHard = .8, KIHard = .5, KDHard = .004,
+
+
+
     turnKP = .005, turnKI = .0, turnKD = .0;
     //turnKP = 1.5, turnKI = .58, turnKD = .03;
 
@@ -133,7 +143,9 @@ public final class Constants {
 
     public static final double
 
-    KP = 4.8, KI = .27, KD = .11,
+    // KP = 4.8, KI = .27, KD = .11,
+        KP = .825 , KI = .108, KD = 0.02,
+
 
         ksVolts = 0.15285,
 
@@ -160,7 +172,10 @@ public final class Constants {
     public static final double
 
     kArmGearRatio = 200, kCountsPerRev = 2048, kArmScaleFactor = (360 / (410068 / (2048 * 200))),
-        KP = .02, KI = .0015, KD = .001;
+        
+    // KP = .02, KI = .0015, KD = .001;
+    KP = .013, KI = .002, KD = .0014;
+
   }
 
   public static final class ClawConstants {
@@ -171,7 +186,7 @@ public final class Constants {
 
     public static final double
 
-    clawKP = .04, clawKI = .0007, clawKD = 0,
+    clawKP = .02, clawKI = .0062, clawKD = 0,
         kClawGearRatio = 100, kCountsPerRev = 2048, kClawScaleFactor = 600;
 
   }
@@ -186,9 +201,11 @@ public final class Constants {
 
         // longGyroKP = .025, longGyroKI = .0008, longGyroKD = .005;
 
-        shortGyroKP = .000, shortGyroKI = .000, shortGyroKD = .00,
+        shortGyroKP = .028, shortGyroKI = .01, shortGyroKD = .005,
 
-        longGyroKP = .00, longGyroKI = .000, longGyroKD = .00;
+        longGyroKP = .026, longGyroKI = .002, longGyroKD = .008;
+        // longGyroKP = .00, longGyroKI = .00, longGyroKD = .00;
+
   }
 
   public static final class SpeedConstants {

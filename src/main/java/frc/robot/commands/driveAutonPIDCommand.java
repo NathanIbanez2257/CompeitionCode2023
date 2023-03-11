@@ -20,6 +20,7 @@ public class driveAutonPIDCommand extends CommandBase {
   private final drive driveSub;
   private final PIDController drivePID;
   private final double goal;
+  private boolean done;
 
 
   public driveAutonPIDCommand(double setPoint, drive drive) {
@@ -36,15 +37,18 @@ public class driveAutonPIDCommand extends CommandBase {
   @Override
   public void initialize() {
     drivePID.reset();
-    drivePID.setTolerance(.02);
+    drivePID.setTolerance(.005);
     driveSub.resetEncoders();
    }
 
   @Override
   public void execute() {
 
+    done = drivePID.atSetpoint();
+
     double speed = drivePID.calculate(driveSub.leftNativeDistanceInMeters());
     driveSub.move(-speed, -speed);
+
 
     //cascadePID.calculate(cascadeSub.cascadeTick2Feet(), goal);
      /*
@@ -65,7 +69,7 @@ public class driveAutonPIDCommand extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return done;
   }
 
 }

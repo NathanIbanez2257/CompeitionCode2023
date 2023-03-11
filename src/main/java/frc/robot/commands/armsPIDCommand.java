@@ -15,13 +15,12 @@ public class armsPIDCommand extends CommandBase {
   private final arms armSub;
   private final PIDController armPID;
   private final double goal;
-  private boolean done;
+  private boolean done;  
 
   public armsPIDCommand(double setPoint, arms arms) {
     goal = setPoint;
     armSub = arms;
     armPID = new PIDController(ArmConstants.KP, ArmConstants.KI, ArmConstants.KD);
-
     armPID.setSetpoint(setPoint);
 
     addRequirements(armSub);
@@ -30,7 +29,8 @@ public class armsPIDCommand extends CommandBase {
   @Override
   public void initialize() {
     armPID.reset();
-    // armPID.setTolerance(3);
+    System.out.println("\n\nArm PID Command Has Started\n\n");
+    armPID.setTolerance(.25);
   }
 
   @Override
@@ -40,14 +40,6 @@ public class armsPIDCommand extends CommandBase {
     double speed = armPID.calculate(armSub.armTickToDegrees(), goal);
     armSub.move(speed);
 
-    // cascadePID.calculate(cascadeSub.cascadeTick2Feet(), goal);
-    /*
-     * cascadeSub.setVoltage(cascadePID.calculate(cascadeSub.cascadeTick2Feet(),
-     * goal) + feedForward.calculate(goal));
-     * 
-     * 
-     */
-
     SmartDashboard.putBoolean("Arm Tolerance Check", armPID.atSetpoint());
     SmartDashboard.putNumber("Arm Tolerance", armPID.getPositionError());
 
@@ -56,6 +48,8 @@ public class armsPIDCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
 
+    System.out.println("\n\nArm PID Command Has Finished\n\n");
+    armSub.move(0);
   }
 
   @Override

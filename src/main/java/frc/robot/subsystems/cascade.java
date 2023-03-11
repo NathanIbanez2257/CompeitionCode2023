@@ -18,14 +18,19 @@ public class cascade extends SubsystemBase {
   public cascade() {
     breakMode();
 
-    cascade.setSelectedSensorPosition(-1190);
+    // cascade.setSelectedSensorPosition(-2432);
 
     cascade.configForwardSoftLimitEnable(true);
     cascade.configReverseSoftLimitEnable(true);
 
     // 118166
-    cascade.configForwardSoftLimitThreshold(116825);
-    cascade.configReverseSoftLimitThreshold(1100);
+    // cascade.configForwardSoftLimitThreshold(116825);
+    // cascade.configForwardSoftLimitThreshold(116000);
+    cascade.configForwardSoftLimitThreshold(115900);
+    
+
+    // cascade.configReverseSoftLimitThreshold(1100);
+    cascade.configReverseSoftLimitThreshold(-700);
 
   }
 

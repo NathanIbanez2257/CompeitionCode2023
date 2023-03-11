@@ -61,7 +61,7 @@ public class RobotContainer {
         private static final armsCommand armUpCommand = new armsCommand(armsSub, SpeedConstants.armSpeed);
         private static final armsCommand armDownCommand = new armsCommand(armsSub, -SpeedConstants.armSpeed);
 
-        private static final armsPIDCommand armsZeroCommand = new armsPIDCommand(0, armsSub);
+        private static final armsPIDCommand armsZeroCommand = new armsPIDCommand(-0.02, armsSub);
         private static final armsPIDCommand armsHighCommand = new armsPIDCommand(143, armsSub);
         private static final armsPIDCommand armsHumanCommand = new armsPIDCommand(135, armsSub);
 
@@ -80,15 +80,15 @@ public class RobotContainer {
         private static final clawCommand clawOpenCommand = new clawCommand(SpeedConstants.clawSpeed, clawSub);
         private static final clawCommand clawCloseCommand = new clawCommand(-SpeedConstants.clawSpeed, clawSub);
 
-        private static final clawPIDCommand clawOpenPIDCommand = new clawPIDCommand(85, clawSub);
+        private static final clawPIDCommand clawOpenPIDCommand = new clawPIDCommand(80, clawSub);
 
         private static final clawPIDCommand clawZeroPIDCommand = new clawPIDCommand(0, clawSub); // button 15
 
         private static final turnPIDCommand RedTurnCommand = new turnPIDCommand(-90, driveSub);
 
         private static final chargeCommand chargeBalanceCommand = new chargeCommand(driveSub);
-        private static final chargePIDCommand chargeBalancePIDCommand = new chargePIDCommand(0, driveSub);
 
+        private static final chargePIDCommand chargeBalancePIDCommand = new chargePIDCommand(-.4, driveSub);
 
         private static final Joystick nathan = new Joystick(NathanControllerConstants.nathan);
         private static final Joystick sebas = new Joystick(SebasControllerConstants.sebas);
@@ -125,6 +125,7 @@ public class RobotContainer {
                 chooser.addOption("Side Auto", SideAuto);
                 chooser.addOption("No Auton", null);
                 chooser.addOption("New Middle Auto", newMiddleAuto);
+                chooser.addOption("Test PID Auto", testMiddleAuto);
 
                 SmartDashboard.putData(chooser);
 
@@ -191,9 +192,13 @@ public class RobotContainer {
                 JoystickButton cascadeDown = new JoystickButton(nathan, NathanControllerConstants.cascadeDownButton);
                 cascadeDown.whileTrue(cascadeDownCommand);
 
-                JoystickButton chargeBalance = new JoystickButton(nathan,
-                                NathanControllerConstants.gyroBalanceButton);
-                chargeBalance.whileTrue(chargeBalanceCommand);
+                // JoystickButton chargeBalance = new JoystickButton(nathan,
+                //                 NathanControllerConstants.gyroBalanceButton);
+                // chargeBalance.whileTrue(chargeBalanceCommand);
+
+                JoystickButton chargeBalancePID = new JoystickButton(nathan,
+                                10);
+                chargeBalancePID.whileTrue(chargeBalancePIDCommand);
 
                 ///////////////// Nathan Controls ///////////////////////
 
@@ -351,8 +356,8 @@ public class RobotContainer {
                         new chargeCommand(driveSub).withTimeout(1.25)
                                         .andThen(() -> System.out.println("Charge Command Has Finished")));
 
-
-        ////////////////////////        New Autonomous Testing Post Utah                /////////////////////////////
+        //////////////////////// New Autonomous Testing Post Utah
+        //////////////////////// /////////////////////////////
 
         SequentialCommandGroup autoTest1;
 
@@ -426,13 +431,152 @@ public class RobotContainer {
                         SideArmCascadeClawDown,
                         new WaitCommand(.25),
                         SideDriveBack, SideDriveBack2ndStage);
-                        // SideDriveBack,
-                        // // new WaitCommand(.5),
+        // SideDriveBack,
+        // // new WaitCommand(.5),
 
-                        // // have to adjust these values at competiton
-                        // SideDriveBack2ndStage,
-                        // SideDriveBack3ndStage,
-                        // SideDriveBack4ndStage);
+        // // have to adjust these values at competiton
+        // SideDriveBack2ndStage,
+        // SideDriveBack3ndStage,
+        // SideDriveBack4ndStage);
+
+        SequentialCommandGroup testDriveInitial = new SequentialCommandGroup(
+                        new driveAutonPIDCommand(.85, driveSub).withTimeout(2.25));
+
+        SequentialCommandGroup testArmRaise = new SequentialCommandGroup(
+                        new armsPIDCommand(115, armsSub).withTimeout(1.75));
+
+        SequentialCommandGroup testCascadeRaise = new SequentialCommandGroup(
+                        new cascadePIDCommand(1.15, cascadeSub).withTimeout(1.75));
+
+        SequentialCommandGroup testClawOpenAuto = new SequentialCommandGroup(
+                        new clawCommand(.3, clawSub).withTimeout(.4));
+
+        SequentialCommandGroup testClawCloseAuto = new SequentialCommandGroup(
+                        new clawCommand(-.3, clawSub).withTimeout(.4));
+
+        ParallelCommandGroup testDriveBackSlow = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-1.15, driveSub).withTimeout(1.25));
+        // ,
+        // new armsPIDCommand(130, armsSub).withTimeout(.75));
+
+        SequentialCommandGroup testDriveBack = new SequentialCommandGroup(
+                        new drivePIDHardCommand(-1.25, driveSub).withTimeout(1.5));
+
+        ParallelCommandGroup testDriveJerk = new ParallelCommandGroup(
+                        new drivePIDHardCommand(2, driveSub).withTimeout(.1));
+
+        ParallelCommandGroup testDriveBack2ndStage = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-1.25, driveSub).withTimeout(3));
+        // new armsPIDCommand(66, armsSub).withTimeout(.75));
+
+
+        ParallelCommandGroup testDriveBack3ndStage = new ParallelCommandGroup(
+                        new driveAutonPIDCommand(-.17, driveSub).withTimeout(1.5));
+
+        SequentialCommandGroup testArmPostRaise = new SequentialCommandGroup(
+                        new armsPIDCommand(140, armsSub).withTimeout(1.25));
+
+        SequentialCommandGroup testArmPostLower = new SequentialCommandGroup(
+                        new armsPIDCommand(-25, armsSub).withTimeout(1.25));
+
+        SequentialCommandGroup testCascadeLower = new SequentialCommandGroup(
+                        new cascadePIDCommand(0, cascadeSub).withTimeout(1.25));
+
+        ParallelCommandGroup testArmCascadeClawDown = new ParallelCommandGroup(
+                        testCascadeLower,
+                        testArmPostLower.beforeStarting(new WaitCommand(.25)),
+                        testClawCloseAuto);
+
+        ParallelCommandGroup testCubeScore = new ParallelCommandGroup(
+                        testDriveInitial.beforeStarting(new WaitCommand(2.5)),
+                        testArmRaise,
+                        testCascadeRaise.beforeStarting(new WaitCommand(2)),
+                        testClawOpenAuto.beforeStarting(new WaitCommand(4)));
+
+        SequentialCommandGroup testMiddleAuto = new SequentialCommandGroup(
+                        testCubeScore.andThen(() -> System.out.println("\n\nInitial Auton Done\n\n")),
+
+                        new WaitCommand(.5),
+
+                        testDriveBackSlow.andThen(() -> System.out.println("\n\nBack Move Done\n\n")),
+
+                        new WaitCommand(.5),
+                
+                        testArmCascadeClawDown,
+
+                        testDriveJerk,
+
+                        testDriveBack,
+
+                        testDriveBack2ndStage,
+
+                        new WaitCommand(.25),
+
+                        chargeBalancePIDCommand,
+
+                        
+
+
+                        new WaitCommand(1).andThen(() -> System.out.println("\n\nTest Complete\n\n"))
+
+                        // chargeBalancePIDCommand
+
+                        // new WaitCommand(.2),
+                        // testDriveJerk,
+                        // testDriveBack,
+                        // testDriveBack2ndStage,
+                        // testDriveBack3ndStage,
+
+                        // new chargeCommand(driveSub).withTimeout(1.25)
+                        //                 .andThen(() -> System.out.println("Charge Command Has Finished"))
+
+
+
+
+
+
+
+
+                                        );
+
+        SequentialCommandGroup testPIDCommand = new SequentialCommandGroup(
+
+        // new driveAutonPIDCommand(1.5, driveSub),
+
+        // new WaitCommand(2),
+
+        // new driveAutonPIDCommand(.85, driveSub),
+
+        // new WaitCommand(2),
+
+        // new driveAutonPIDCommand(-1.5, driveSub),
+
+        // new WaitCommand(2),
+
+        // new driveAutonPIDCommand(-.85, driveSub)
+
+        // new drivePIDHardCommand(2.5, driveSub),
+
+        // new WaitCommand(2),
+
+        // new drivePIDHardCommand(.85, driveSub),
+
+        // new WaitCommand(2),
+
+        // new drivePIDHardCommand(-1.5, driveSub),
+
+        // new WaitCommand(4),
+
+        // new drivePIDHardCommand(-.85, driveSub)
+
+        // new WaitCommand(5),
+        // new drivePIDHardCommand(-.85, driveSub),
+        // new drivePIDHardCommand(-.85, driveSub),
+        // new WaitCommand(3),
+        // new drivePIDHardCommand(.75, driveSub).withTimeout(.15),
+        // new drivePIDHardCommand(-1.5, driveSub)
+
+        );
 
         /*
          * ParallelCommandGroup AutonomousPractice = new ParallelCommandGroup(

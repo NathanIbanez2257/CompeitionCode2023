@@ -23,8 +23,10 @@ public class arms extends SubsystemBase {
   /** Creates a new arms. */
   public arms() {
 
-    leftArm.setSelectedSensorPosition(-41368);
-    rightArm.setSelectedSensorPosition(-41368);
+    // leftArm.setSelectedSensorPosition(-41368);
+    // rightArm.setSelectedSensorPosition(-41368);
+
+    // resetEncoders();
     //41368
     breakMode();
     leftArm.configForwardSoftLimitEnable(false);
@@ -79,7 +81,7 @@ public class arms extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Encoder Position Arms", rightArm.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Encoder In Degrees Arm", armTickToDegrees());
+    SmartDashboard.putNumber("Arm Encoder Position", rightArm.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Arm Encoder In Degrees Arm", armTickToDegrees());
   }
 }

@@ -13,6 +13,7 @@ import frc.robot.subsystems.claw;
 public class clawPIDCommand extends CommandBase {
   private final claw clawSub;
   private final double closePostions;
+  private boolean done;
 
   private final PIDController clawPID; 
 
@@ -28,11 +29,12 @@ public class clawPIDCommand extends CommandBase {
   @Override
   public void initialize() {
     clawPID.reset();
-    clawPID.setTolerance(4);  
+    clawPID.setTolerance(0.1);  
   }
 
   @Override
   public void execute() {
+    done = clawPID.atSetpoint();
     double speed = clawPID.calculate(clawSub.clawTickToDegrees());
     clawSub.move(speed);
 
@@ -41,7 +43,9 @@ public class clawPIDCommand extends CommandBase {
   }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    clawSub.move(0);
+  }
 
   @Override
   public boolean isFinished() {

@@ -20,12 +20,13 @@ public class drivePIDHardCommand extends CommandBase {
   private final drive driveSub;
   private final PIDController drivePID;
   private final double goal;
+  private boolean done;
 
 
   public drivePIDHardCommand(double setPoint, drive drive) {
     goal = setPoint;
     driveSub = drive;
-    drivePID = new PIDController(AutonConstatns.KP, AutonConstatns.KI, AutonConstatns.KD);
+    drivePID = new PIDController(AutonConstatns.KPHard, AutonConstatns.KIHard, AutonConstatns.KDHard);
 
 
     drivePID.setSetpoint(setPoint);
@@ -36,7 +37,7 @@ public class drivePIDHardCommand extends CommandBase {
   @Override
   public void initialize() {
     drivePID.reset();
-    drivePID.setTolerance(.02);
+    drivePID.setTolerance(.045);
     driveSub.resetEncoders();
    }
 
@@ -46,6 +47,8 @@ public class drivePIDHardCommand extends CommandBase {
     double speed = drivePID.calculate(driveSub.leftNativeDistanceInMeters());
     driveSub.move(-speed, -speed);
 
+    done = drivePID.atSetpoint();
+
     //cascadePID.calculate(cascadeSub.cascadeTick2Feet(), goal);
      /*
      cascadeSub.setVoltage(cascadePID.calculate(cascadeSub.cascadeTick2Feet(),
@@ -54,8 +57,8 @@ public class drivePIDHardCommand extends CommandBase {
      
      */
 
-    SmartDashboard.putBoolean("Tolerance Check Drive", drivePID.atSetpoint());
-    SmartDashboard.putNumber("Drive Error", drivePID.getPositionError());
+    SmartDashboard.putBoolean("Tolerance Check Hard Drive", drivePID.atSetpoint());
+    SmartDashboard.putNumber("Hard Drive Error", drivePID.getPositionError());
   }
 
   @Override
@@ -65,7 +68,7 @@ public class drivePIDHardCommand extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return done;
   }
 
 }

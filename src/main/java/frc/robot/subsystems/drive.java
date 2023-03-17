@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -24,6 +21,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.KineConstants;
@@ -316,10 +314,6 @@ public class drive extends SubsystemBase {
 
     SmartDashboard.putNumber("Limelight Distance From Target", distanceFromLimelightToGoalInches);
 
-
-
-
-
     SmartDashboard.putNumber("Pitch", getVertical());
 
     m_Odometry.update(gyro.getRotation2d(), leftNativeDistanceInMetersOdometry(),
@@ -340,5 +334,6 @@ public class drive extends SubsystemBase {
 
     SmartDashboard.putNumber("Left Side Encoders Velocity", leftNativeVelocityInMetersOdometry());
     SmartDashboard.putNumber("Right Side Encoders Velocity", rightNativeVelocityInMetersOdometry());
+
   }
 }

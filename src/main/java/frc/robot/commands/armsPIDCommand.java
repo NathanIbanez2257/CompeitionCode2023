@@ -37,6 +37,7 @@ public class armsPIDCommand extends CommandBase {
   public void execute() {
 
     done = armPID.atSetpoint();
+    
     double speed = armPID.calculate(armSub.armTickToDegrees(), goal);
     armSub.move(speed);
 

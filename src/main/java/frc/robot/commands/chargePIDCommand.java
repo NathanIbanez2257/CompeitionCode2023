@@ -42,7 +42,7 @@ public class chargePIDCommand extends CommandBase {
   @Override
   public void execute() {
 
-    if(Math.abs(driveSub.getVertical()) > 9)
+    if(Math.abs(driveSub.getVertical()) > 4)
     {
       done = gyroLong.atSetpoint();
       double speedLong = gyroLong.calculate(driveSub.getVertical(), goal);

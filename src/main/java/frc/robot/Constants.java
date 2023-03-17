@@ -4,7 +4,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 public final class Constants {
-
   public static final class LimelightOriginalConstants {
 
     public static final double shortAimKP = 0.045, shortAimKI = .0005,
@@ -203,7 +202,7 @@ public final class Constants {
 
         shortGyroKP = .028, shortGyroKI = .01, shortGyroKD = .005,
 
-        longGyroKP = .026, longGyroKI = .002, longGyroKD = .008;
+        longGyroKP = .025, longGyroKI = .002, longGyroKD = .008;
         // longGyroKP = .00, longGyroKI = .00, longGyroKD = .00;
 
   }

@@ -37,6 +37,8 @@ import frc.robot.Constants.SpeedConstants;
 import frc.robot.commands.aimRobotCommand;
 import frc.robot.commands.armsCommand;
 import frc.robot.commands.armsPIDCommand;
+import frc.robot.commands.brakeCommand;
+import frc.robot.commands.breakModeToggleCommand;
 import frc.robot.commands.cascadeCommand;
 import frc.robot.commands.cascadePIDCommand;
 import frc.robot.commands.chargeCommand;
@@ -62,8 +64,8 @@ public class RobotContainer {
         private static final armsCommand armDownCommand = new armsCommand(armsSub, -SpeedConstants.armSpeed);
 
         private static final armsPIDCommand armsZeroCommand = new armsPIDCommand(-0.02, armsSub);
-        private static final armsPIDCommand armsHighCommand = new armsPIDCommand(143, armsSub);
-        private static final armsPIDCommand armsHumanCommand = new armsPIDCommand(135, armsSub);
+        private static final armsPIDCommand armsHighCommand = new armsPIDCommand(130, armsSub);
+        private static final armsPIDCommand armsHumanCommand = new armsPIDCommand(143, armsSub);
 
         // 143
 
@@ -90,6 +92,9 @@ public class RobotContainer {
 
         private static final chargePIDCommand chargeBalancePIDCommand = new chargePIDCommand(-.4, driveSub);
 
+        private static final breakModeToggleCommand breakToggleCommand = new breakModeToggleCommand(driveSub);
+        private static final brakeCommand breakToggle = new brakeCommand(driveSub);
+
         private static final Joystick nathan = new Joystick(NathanControllerConstants.nathan);
         private static final Joystick sebas = new Joystick(SebasControllerConstants.sebas);
 
@@ -111,6 +116,7 @@ public class RobotContainer {
                         driveSub);
 
         SendableChooser<Command> chooser = new SendableChooser<>();
+
 
         public RobotContainer() {
 
@@ -182,7 +188,7 @@ public class RobotContainer {
                 clawOpenPID.onTrue(clawOpenPIDCommand);
 
                 JoystickButton clawClosePID = new JoystickButton(sebas, 15);
-                clawClosePID.onTrue(clawZeroPIDCommand);
+                clawClosePID.onTrue((clawZeroPIDCommand));
 
                 ///////////////// Nathan Controls ///////////////////////
 
@@ -211,6 +217,16 @@ public class RobotContainer {
 
                 JoystickButton limeTrack = new JoystickButton(nathan, NathanControllerConstants.limeTrackButton);
                 limeTrack.whileTrue(limelightAimCommand);
+
+                // JoystickButton coastMode = new JoystickButton(nathan, 13);
+                // coastMode.toggleOnTrue(breakToggleCommand);
+
+
+
+
+
+
+                
 
                 // turning pid testing
 
